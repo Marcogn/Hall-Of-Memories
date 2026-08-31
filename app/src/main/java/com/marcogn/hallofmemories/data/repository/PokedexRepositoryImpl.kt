@@ -66,6 +66,12 @@ class PokedexRepositoryImpl @Inject constructor(
         return merged.map { it.toDomain() }
     }
 
+    override suspend fun getMoveType(name: String): String? {
+        val key = searchKey(name)
+        if (key.isBlank()) return null
+        return pokedexDao.getMoveBySearchName(key)?.type
+    }
+
     override fun observeNatures(): Flow<List<PokedexNature>> =
         pokedexDao.observeNatures().map { rows -> rows.map { it.toDomain() } }
 

@@ -26,6 +26,9 @@ interface PokedexRepository {
     suspend fun searchSpecies(query: String, limit: Int = DEFAULT_SEARCH_LIMIT): List<PokedexSpecies>
     suspend fun getSpeciesById(id: Int): PokedexSpecies?
     suspend fun searchMoves(query: String, limit: Int = DEFAULT_SEARCH_LIMIT): List<PokedexMove>
+
+    /** Exact-name lookup, `null` if the cache is empty or has no such move — used only to colour a saved slot's move chip, never to alter what's shown (spec's "typing aid, never a dependency"). */
+    suspend fun getMoveType(name: String): String?
     fun observeNatures(): Flow<List<PokedexNature>>
     fun observeAbilities(): Flow<List<PokedexAbility>>
     suspend fun searchItems(query: String, limit: Int = DEFAULT_SEARCH_LIMIT): List<PokedexItem>

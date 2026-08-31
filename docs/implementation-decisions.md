@@ -181,3 +181,54 @@ DPPT/HGSS/BW → "Nintendo DS", XY/ORAS/SM/USUM → "Nintendo 3DS", SWSH/SV →
 a tiebreaker, never a hard filter — a search still returns every matching
 title across platforms, the hint only reorders which one is likeliest to be
 right when several platforms share a title.
+
+## Per-field slot validation is a commit filter, not a blocking error *(Phase 3)*
+
+Spec §3.4 draws a real distinction: an out-of-range level/IV/EV "shows an
+inline error and is not committed to the draft", while only the EV total
+over 510 "blocks saving that slot". `SlotEditorDialog` implements this
+literally — every numeric field is edited as a raw string
+(`SlotEditorDialog.kt`'s private `SlotFormFields`), and `toSlotDraft()`
+parses each one through `String.toValidIntOrNull(range)`, silently nulling
+out whatever doesn't parse or falls outside range. The Confirm button itself
+is only ever disabled by `SlotValidation.isEvTotalValid(evTotal)` — never by
+an individual field being out of range. This means a slot can be confirmed
+with, say, an invalid level typed and left uncorrected — it just saves as
+"level not set" rather than the invalid number, which matches the spec's
+wording exactly rather than the more defensive "block until everything is
+valid" pattern used elsewhere in strict forms.
+
+## Move type chips do a live cache lookup, denormalized data stays denormalized *(Phase 3)*
+
+`PokemonSlot.move1..move4` are denormalized snapshot strings (`domain/model/
+PokemonSlot.kt`'s doc comment) — a cache wipe must never blank them. But the
+entry detail view wants to colour each move chip by its type (spec §3, "the
+four moves as chips with type colours"), and type isn't stored on the slot.
+The resolution: `PokedexDao.getMoveBySearchName()` /
+`PokedexRepository.getMoveType()` do an exact-name lookup **only** to pick a
+chip colour at render time — if the cache is empty or the move isn't found,
+`typeColorFor(null)` renders a neutral fallback colour and the move's name
+still displays in full. The saved slot itself is never touched by this
+lookup; wiping the cache degrades a chip's colour, never the data.
+
+## HallOfFameContent has no `viewMode` parameter *(Phase 3)*
+
+The phase plan's draft signature was `HallOfFameContent(entry, hack,
+viewMode)`. Implemented without it: this composable renders one entry's
+full detail (screenshot, trainer block, six team cards, notes) and no part
+of that view meaningfully differs between a list/grid "view mode" — that
+concept applies to browsing *many* entries (Home's hack library, and now
+the hack detail screen's own newest/oldest-sorted entry list), not to
+viewing one entry's own detail. Read as a plan artifact rather than a real
+requirement; nothing in the phase's definition-of-done depends on it.
+
+## Screenshot capture is a `content://` handoff to the system camera app *(Phase 3)*
+
+`ActivityResultContracts.TakePicture` writes into a `FileProvider`-backed
+URI (`data/image/CameraCapture.kt`'s `createCameraCaptureUri()`, under
+`cacheDir/camera/`), the same shape as a gallery pick's URI —
+`ImageStorage.persist()` handles both identically, downsampling and moving
+the bytes into `filesDir/images/`. No `CAMERA` runtime permission is
+declared: the system camera app that actually handles the intent holds
+that permission itself, this app only ever receives the finished photo
+through the URI it handed out.

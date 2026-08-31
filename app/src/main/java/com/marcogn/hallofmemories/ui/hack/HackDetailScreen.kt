@@ -9,15 +9,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.CatchingPokemon
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,14 +38,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.marcogn.hallofmemories.R
+import com.marcogn.hallofmemories.domain.model.GameGeneration
 import com.marcogn.hallofmemories.domain.model.HallOfFameEntryWithSlots
 import com.marcogn.hallofmemories.ui.common.HackArtwork
+import com.marcogn.hallofmemories.ui.common.PokemonSprite
 import com.marcogn.hallofmemories.ui.common.displayName
+import com.marcogn.hallofmemories.ui.hof.HallOfFameContent
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -112,8 +120,24 @@ fun HackDetailScreen(
 
             when {
                 uiState.entries.isEmpty() -> HackDetailEmptyState(onAddEntry = { onAddEntry(hack.id) })
-                uiState.entries.size == 1 -> HallOfFameInlinePlaceholder(modifier = Modifier.padding(16.dp))
-                else -> HallOfFameEntryList(entries = uiState.entries, onEntryClick = onEntryClick)
+                uiState.entries.size == 1 -> HallOfFameContent(
+                    entryWithSlots = uiState.entries.first(),
+                    hackGeneration = hack.generation,
+                    alwaysUseLatestSprites = uiState.alwaysUseLatestSprites,
+                    onLookupMoveType = viewModel::lookupMoveType,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(16.dp),
+                )
+                else -> HallOfFameEntryList(
+                    entries = uiState.sortedEntries,
+                    sortNewestFirst = uiState.sortNewestFirst,
+                    hackGeneration = hack.generation,
+                    alwaysUseLatestSprites = uiState.alwaysUseLatestSprites,
+                    onToggleSortOrder = viewModel::onToggleSortOrder,
+                    onEntryClick = onEntryClick,
+                )
             }
         }
     }
@@ -155,47 +179,76 @@ private fun HackDetailEmptyState(onAddEntry: () -> Unit) {
     }
 }
 
-/** Phase 3 supplies the real `HallOfFameContent` composable; this is the placeholder this phase's plan asks for. */
 @Composable
-private fun HallOfFameInlinePlaceholder(modifier: Modifier = Modifier) {
-    Card(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(R.string.coming_soon_phase, 3),
-            modifier = Modifier.padding(24.dp),
-            style = MaterialTheme.typography.bodyMedium,
-        )
-    }
-}
-
-@Composable
-private fun HallOfFameEntryList(entries: List<HallOfFameEntryWithSlots>, onEntryClick: (String) -> Unit) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(entries, key = { it.entry.id }) { entryWithSlots ->
-            val entry = entryWithSlots.entry
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onEntryClick(entry.id) }
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                // Screenshot/slot-0 sprite thumbnail arrives in Phase 3.
-                Icon(
-                    imageVector = Icons.Filled.CatchingPokemon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+private fun HallOfFameEntryList(
+    entries: List<HallOfFameEntryWithSlots>,
+    sortNewestFirst: Boolean,
+    hackGeneration: GameGeneration,
+    alwaysUseLatestSprites: Boolean,
+    onToggleSortOrder: () -> Unit,
+    onEntryClick: (String) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TextButton(onClick = onToggleSortOrder) {
+                Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = null, modifier = Modifier.padding(end = 4.dp))
+                Text(
+                    stringResource(
+                        if (sortNewestFirst) R.string.hack_detail_sort_newest_first else R.string.hack_detail_sort_oldest_first,
+                    ),
                 )
-                Column {
-                    Text(text = entry.playerName, style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        text = listOfNotNull(
-                            entry.playtimeText.takeIf { it.isNotBlank() },
-                            dateFormatter.format(entry.insertedAt.atZone(ZoneId.systemDefault())),
-                        ).joinToString(" · "),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+            }
+        }
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(entries, key = { it.entry.id }) { entryWithSlots ->
+                val entry = entryWithSlots.entry
+                val slot0 = entryWithSlots.slots.firstOrNull { it.slotIndex == 0 }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onEntryClick(entry.id) }
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Box(modifier = Modifier.size(48.dp)) {
+                        when {
+                            entry.screenshotPath != null -> AsyncImage(
+                                model = entry.screenshotPath,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                            slot0?.speciesId != null -> PokemonSprite(
+                                speciesId = slot0.speciesId,
+                                generation = hackGeneration,
+                                shiny = slot0.isShiny,
+                                alwaysUseLatest = alwaysUseLatestSprites,
+                                speciesGeneration = null,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                            else -> Icon(
+                                imageVector = Icons.Filled.CatchingPokemon,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                    Column {
+                        Text(text = entry.playerName, style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            text = listOfNotNull(
+                                entry.playtimeText.takeIf { it.isNotBlank() },
+                                dateFormatter.format(entry.insertedAt.atZone(ZoneId.systemDefault())),
+                            ).joinToString(" · "),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }

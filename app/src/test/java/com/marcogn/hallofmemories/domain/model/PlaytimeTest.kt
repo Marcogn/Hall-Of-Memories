@@ -41,4 +41,20 @@ class PlaytimeTest {
     fun `whitespace around a valid value is trimmed`() {
         assertEquals(2537, parsePlaytimeMinutes("  42:17  "))
     }
+
+    @Test
+    fun `formatting total minutes round-trips through parsing`() {
+        assertEquals("42:17", formatPlaytimeMinutes(2537))
+        assertEquals(2537, parsePlaytimeMinutes(formatPlaytimeMinutes(2537)))
+    }
+
+    @Test
+    fun `formatting pads a single-digit minute remainder`() {
+        assertEquals("1:05", formatPlaytimeMinutes(65))
+    }
+
+    @Test
+    fun `formatting a whole number of hours still shows the colon`() {
+        assertEquals("5:00", formatPlaytimeMinutes(300))
+    }
 }

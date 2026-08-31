@@ -80,6 +80,10 @@ interface PokedexDao {
     @Query("SELECT COUNT(*) FROM pokedex_moves")
     suspend fun countMoves(): Int
 
+    /** Exact lookup by normalized [searchName] — used only to colour a saved move's type chip; never a dependency of the saved slot itself (see the class doc). */
+    @Query("SELECT * FROM pokedex_moves WHERE searchName = :searchName LIMIT 1")
+    suspend fun getMoveBySearchName(searchName: String): PokeMoveEntity?
+
     // --- Natures ---
 
     @Query("DELETE FROM pokedex_natures")

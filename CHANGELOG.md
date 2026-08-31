@@ -45,3 +45,25 @@ release process".
     instead of failing.
   - Each hack's detail screen shows its artwork and its Hall of Fame entries
     (still a placeholder pending Phase 3) with an entry count.
+- **Hall of Fame entries and the six-slot team editor (Phase 3).** The heart
+  of the app: create a Hall of Fame under a hack, fill six Pokémon slots
+  with full detail, view it, and edit it forever.
+  - Each slot edits species (searched against the local pokédex cache, with
+    a "not downloaded yet" card and a "Download now" action when the cache
+    is empty), nickname, gender, level, shiny, nature, ability, held item,
+    up to four moves, and all twelve IV/EV stats. Nature/ability/held
+    item/moves are editable combo boxes — a suggestion dropdown over free
+    text, never a restriction.
+  - Range validation only, never legality: an out-of-range level/IV/EV
+    value is simply not committed, and a total EV over 510 is the one rule
+    that blocks confirming a slot.
+  - Trainer name (the only required field), player ID, playtime, an
+    optional screenshot from gallery or camera (tap to view full-screen
+    with pinch-to-zoom), and an editable insertion date/time.
+  - Leaving the form with unsaved changes asks for confirmation, from both
+    the top bar and the system back gesture.
+  - The entry detail view shows the screenshot, trainer info, and the full
+    team with sprites, nature stat arrows, type-coloured move chips and
+    IV/EV rows; a hack with exactly one entry now shows it inline instead
+    of a placeholder, and a hack with several entries gets real
+    screenshot/sprite thumbnails and a newest/oldest sort toggle.
