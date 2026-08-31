@@ -3,6 +3,7 @@ package com.marcogn.hallofmemories.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.marcogn.hallofmemories.data.settings.SpritePreferences
+import com.marcogn.hallofmemories.data.thegamesdb.TheGamesDbPreferences
 import com.marcogn.hallofmemories.domain.repository.PokedexRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel @Inject constructor(
     private val spritePreferences: SpritePreferences,
     private val pokedexRepository: PokedexRepository,
+    private val theGamesDbPreferences: TheGamesDbPreferences,
 ) : ViewModel() {
 
     val uiState: StateFlow<SettingsUiState> = combine(
@@ -41,4 +43,11 @@ class SettingsViewModel @Inject constructor(
     fun startSyncIfNeeded() = pokedexRepository.startSyncIfNeeded()
 
     fun forceResync() = pokedexRepository.forceResync()
+
+    /** Plain SharedPreferences, read once at composition — no Flow, same pattern as [com.marcogn.hallofmemories.ui.settings.currentAppLanguage]. */
+    fun currentTheGamesDbApiKey(): String = theGamesDbPreferences.apiKey.orEmpty()
+
+    fun setTheGamesDbApiKey(value: String) {
+        theGamesDbPreferences.apiKey = value
+    }
 }

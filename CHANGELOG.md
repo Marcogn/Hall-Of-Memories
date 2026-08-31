@@ -34,3 +34,14 @@ release process".
   - Sprite URLs are derived from a hack's generation, never stored, with a
     verified fallback chain for species or shiny forms a given generation
     has no sprite for.
+- **Hack library and TheGamesDB artwork (Phase 2).** Home is now a real hack
+  library: create, edit and delete hacks (name, generation, base game title,
+  notes), search and generation filters, and a list/grid view toggle.
+  - Box art and logo can be searched on TheGamesDB (a game title, matched to
+    the hack's generation) or picked from the gallery — both optional, with
+    a deterministic generated placeholder when neither is set.
+  - Settings gained a TheGamesDB section to enter the API key the search
+    requires; without one, "Search online" shows an explanatory message
+    instead of failing.
+  - Each hack's detail screen shows its artwork and its Hall of Fame entries
+    (still a placeholder pending Phase 3) with an entry count.
