@@ -123,11 +123,64 @@ file dialogs.
 
 ## Phase 3 — Hall of Fame
 
-*(suggested coverage: the full create → view → edit → delete loop with six
-filled slots; gallery and camera screenshots; sprites correct per generation
-and shiny; a Gen-9 species inside a Gen-3 hack still renders; the EV 510
-limit; discarding unsaved changes from both the top bar and the system back
-gesture; the slot editor with an empty pokédex cache.)*
+1. From a hack with no entries, tap "Add the first Hall of Fame". Fill in a
+   player name (leave everything else blank) and save immediately. Confirm
+   it saves with zero slots filled — nothing else is required.
+2. Create another entry. Tap slot 1, search a species (e.g. "charizard"),
+   pick it from the results, and confirm the sprite shown matches the
+   hack's generation. Fill nickname, gender, level 100, toggle shiny, pick a
+   nature (check the "+Atk / −SpA"-style hint appears in the dropdown),
+   ability, held item, and all four moves via their suggestion dropdowns —
+   confirm typing something not in the dropdown (e.g. a homebrew move name)
+   is still accepted. Fill IVs at 31 each and EVs at 252/252/4 (total 508).
+   Confirm the slot.
+3. Repeat for the other five slots with varied data (leave one deliberately
+   empty). Save the entry and confirm the detail view shows exactly six
+   cards, the empty one dimmed and labeled, and every field survives the
+   round trip exactly as typed (including a nickname distinct from the
+   species, and a shiny marker).
+4. Reopen the entry for editing, open a filled slot, and try to push a
+   single EV field to 253 and to −1: both show an inline error and the
+   value is not committed to the slot's saved data (re-close and reopen the
+   slot to confirm the last valid value stuck, not the rejected one).
+5. Push the EV total over 510 (e.g. 252/252/10/0/0/0 = 514): confirm the
+   slot's confirm button disables and an inline error appears on the EV
+   block; bring the total back to exactly 510 and confirm it re-enables.
+6. Test a shiny in an early generation that doesn't support them (e.g. a
+   Gen-1 hack) and confirm the sprite resolver's documented fallback
+   applies rather than a broken image. Separately, place a Gen-9-only
+   species (e.g. a Paldea starter) into a Gen-3 hack's slot and confirm the
+   sprite still renders via the fallback chain, not a blank box.
+7. Add a screenshot from the gallery, save, then edit again and replace it
+   with a camera capture (needs a device/emulator with a working camera
+   app). Confirm the new photo appears immediately and the old file is no
+   longer in the app's internal storage after save (not before — a
+   cancelled edit must leave the original intact).
+8. From the entry detail, tap the screenshot: confirm it opens full-screen
+   and pinch-to-zoom/pan works, then dismiss it.
+9. Start editing an entry, change the player name and a slot, then press
+   the system back gesture (not the top bar's back arrow): confirm the
+   "discard changes?" dialog appears, and that both "discard" and "cancel"
+   behave correctly. Repeat using the top bar's back arrow instead of the
+   gesture — both paths must ask.
+10. On a fresh install with the pokédex cache not yet downloaded (or after
+    "Invalidate and re-download" in Settings, checked before the sync
+    finishes), open the slot editor: confirm the "Pokédex data hasn't been
+    downloaded yet" card appears with a working "Download now" action, that
+    species search returns nothing until the sync completes, and that every
+    other field (nickname, nature, ability, held item, moves as free text)
+    still works normally in the meantime.
+11. With two or more entries under one hack, confirm the hack detail screen
+    shows a real thumbnail per entry (the screenshot if set, else slot 0's
+    sprite, else a generic placeholder) and that the newest/oldest sort
+    toggle actually reorders the list.
+12. Delete an entry from its detail screen (confirmation dialog) and confirm
+    its screenshot file is removed from internal storage and it disappears
+    from the hack's entry list immediately. Delete a hack with several
+    entries and confirm all of their slots and screenshots are gone too
+    (cascade, already covered at the DB layer by
+    `HallOfFameDaoTest`/`HackRepositoryImplTest`, but worth a device
+    sanity check for the files).
 
 ## Phase 4 — Templates
 

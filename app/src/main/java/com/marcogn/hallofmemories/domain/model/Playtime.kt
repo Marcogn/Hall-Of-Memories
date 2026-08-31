@@ -23,3 +23,15 @@ fun parsePlaytimeMinutes(text: String): Int? {
 
     return trimmed.toIntOrNull()?.let { hours -> hours * 60 }
 }
+
+/**
+ * Formats total minutes back into `H:MM` — the inverse of [parsePlaytimeMinutes] for a value that
+ * came from parsed minutes rather than typed text (e.g. pre-filling a template or a future stats
+ * screen). Never used to overwrite [com.marcogn.hallofmemories.domain.model.HallOfFameEntry.playtimeText]
+ * itself, which always keeps exactly what the user typed.
+ */
+fun formatPlaytimeMinutes(totalMinutes: Int): String {
+    val hours = totalMinutes / 60
+    val minutes = totalMinutes % 60
+    return "$hours:${minutes.toString().padStart(2, '0')}"
+}

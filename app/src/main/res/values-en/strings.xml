@@ -132,6 +132,61 @@
     <string name="game_search_no_results">No results. Try searching for the official game this hack is based on.</string>
     <string name="game_search_failed">Search failed</string>
 
-    <!-- Placeholder for screens not implemented yet -->
-    <string name="coming_soon_phase">Coming in Phase %1$d</string>
+    <!-- Hack: detail — Hall of Fame list -->
+    <string name="hack_detail_sort_newest_first">Newest first</string>
+    <string name="hack_detail_sort_oldest_first">Oldest first</string>
+
+    <!-- Screenshot (shared by the form and the slot editor) -->
+    <string name="hof_screenshot_label">Screenshot</string>
+    <string name="hof_screenshot_take_photo">Take a photo</string>
+
+    <!-- Hall of Fame: form -->
+    <string name="hof_form_new_title">New Hall of Fame</string>
+    <string name="hof_form_edit_title">Edit Hall of Fame</string>
+    <string name="hof_entry_not_found">Hall of Fame not found</string>
+    <string name="hof_form_validation_player_name_required">Player name is required</string>
+    <string name="hof_form_team_title">Team</string>
+    <string name="hof_form_trainer_title">Trainer</string>
+    <string name="hof_form_player_name_label">Player name</string>
+    <string name="hof_form_player_id_label">Player ID</string>
+    <string name="hof_form_playtime_label">Playtime</string>
+    <string name="hof_form_playtime_hint">E.g. \"42:17\" (H:MM)</string>
+    <string name="hof_form_inserted_at_label">Hall of Fame date</string>
+    <string name="hof_form_inserted_at_change">Change</string>
+    <string name="hof_form_discard_title">Discard changes?</string>
+    <string name="hof_form_discard_message">Your unsaved changes will be lost.</string>
+    <string name="hof_form_discard_confirm">Discard</string>
+
+    <!-- Hall of Fame: slot editor -->
+    <string name="hof_slot_editor_title">Slot %1$d</string>
+    <string name="hof_slot_empty">Slot %1$d — empty</string>
+    <string name="hof_slot_level">Level %1$d</string>
+    <string name="hof_slot_shiny">Shiny</string>
+    <string name="hof_slot_species_label">Species</string>
+    <string name="hof_slot_species_search_label">Search a species</string>
+    <string name="hof_slot_species_change">Change</string>
+    <string name="hof_slot_nickname_label">Nickname</string>
+    <string name="hof_slot_gender_label">Gender</string>
+    <string name="hof_slot_level_label">Level</string>
+    <string name="hof_slot_shiny_label">Shiny</string>
+    <string name="hof_slot_nature_label">Nature</string>
+    <string name="hof_slot_ability_label">Ability</string>
+    <string name="hof_slot_held_item_label">Held item</string>
+    <string name="hof_slot_moves_title">Moves</string>
+    <string name="hof_slot_move_label">Move %1$d</string>
+    <string name="hof_slot_ivs_title">IVs</string>
+    <string name="hof_slot_evs_title">EVs</string>
+    <string name="hof_slot_ev_total">EV total: %1$d / %2$d</string>
+    <string name="hof_slot_ev_total_error">Total EVs cannot exceed %1$d</string>
+    <string name="hof_pokedex_empty_message">Pokédex data hasn\'t been downloaded yet. Species search isn\'t available until it is; every other field still works as free text.</string>
+    <string name="hof_pokedex_empty_download">Download now</string>
+
+    <!-- Hall of Fame: detail -->
+    <string name="hof_detail_player_id">Player ID: %1$s</string>
+    <string name="hof_detail_playtime">Playtime: %1$s</string>
+    <string name="hof_detail_inserted_at">Hall of Fame date: %1$s</string>
+    <string name="hof_detail_held_item">Item: %1$s</string>
+    <string name="hof_detail_iv_ev">IV %1$s · EV %2$s</string>
+    <string name="hof_detail_delete_confirm_title">Delete this Hall of Fame?</string>
+    <string name="hof_detail_delete_confirm_message">Its screenshot and team data will be deleted too.</string>
 </resources>

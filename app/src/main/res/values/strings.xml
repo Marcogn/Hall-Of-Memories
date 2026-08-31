@@ -132,6 +132,61 @@
     <string name="game_search_no_results">Nessun risultato. Prova a cercare il nome del gioco ufficiale su cui si basa la hack.</string>
     <string name="game_search_failed">Ricerca non riuscita</string>
 
-    <!-- Segnaposto per le schermate non ancora implementate -->
-    <string name="coming_soon_phase">Arriverà nella Fase %1$d</string>
+    <!-- Hack: dettaglio — lista Hall of Fame -->
+    <string name="hack_detail_sort_newest_first">Più recenti prima</string>
+    <string name="hack_detail_sort_oldest_first">Più vecchie prima</string>
+
+    <!-- Screenshot (condiviso da form ed editor slot) -->
+    <string name="hof_screenshot_label">Screenshot</string>
+    <string name="hof_screenshot_take_photo">Scatta una foto</string>
+
+    <!-- Hall of Fame: form -->
+    <string name="hof_form_new_title">Nuova Hall of Fame</string>
+    <string name="hof_form_edit_title">Modifica Hall of Fame</string>
+    <string name="hof_entry_not_found">Hall of Fame non trovata</string>
+    <string name="hof_form_validation_player_name_required">Il nome dell\'allenatore è obbligatorio</string>
+    <string name="hof_form_team_title">Squadra</string>
+    <string name="hof_form_trainer_title">Allenatore</string>
+    <string name="hof_form_player_name_label">Nome allenatore</string>
+    <string name="hof_form_player_id_label">ID allenatore</string>
+    <string name="hof_form_playtime_label">Tempo di gioco</string>
+    <string name="hof_form_playtime_hint">Es. \"42:17\" (ore:minuti)</string>
+    <string name="hof_form_inserted_at_label">Data di ingresso in Hall of Fame</string>
+    <string name="hof_form_inserted_at_change">Cambia</string>
+    <string name="hof_form_discard_title">Scartare le modifiche?</string>
+    <string name="hof_form_discard_message">Le modifiche non salvate andranno perse.</string>
+    <string name="hof_form_discard_confirm">Scarta</string>
+
+    <!-- Hall of Fame: editor slot -->
+    <string name="hof_slot_editor_title">Slot %1$d</string>
+    <string name="hof_slot_empty">Slot %1$d — vuoto</string>
+    <string name="hof_slot_level">Livello %1$d</string>
+    <string name="hof_slot_shiny">Shiny</string>
+    <string name="hof_slot_species_label">Specie</string>
+    <string name="hof_slot_species_search_label">Cerca una specie</string>
+    <string name="hof_slot_species_change">Cambia</string>
+    <string name="hof_slot_nickname_label">Soprannome</string>
+    <string name="hof_slot_gender_label">Genere</string>
+    <string name="hof_slot_level_label">Livello</string>
+    <string name="hof_slot_shiny_label">Shiny</string>
+    <string name="hof_slot_nature_label">Natura</string>
+    <string name="hof_slot_ability_label">Abilità</string>
+    <string name="hof_slot_held_item_label">Oggetto equipaggiato</string>
+    <string name="hof_slot_moves_title">Mosse</string>
+    <string name="hof_slot_move_label">Mossa %1$d</string>
+    <string name="hof_slot_ivs_title">IV</string>
+    <string name="hof_slot_evs_title">EV</string>
+    <string name="hof_slot_ev_total">Totale EV: %1$d / %2$d</string>
+    <string name="hof_slot_ev_total_error">Il totale degli EV non può superare %1$d</string>
+    <string name="hof_pokedex_empty_message">I dati Pokédex non sono ancora stati scaricati. La ricerca delle specie non è disponibile finché non lo sono; ogni altro campo resta comunque testo libero.</string>
+    <string name="hof_pokedex_empty_download">Scarica ora</string>
+
+    <!-- Hall of Fame: dettaglio -->
+    <string name="hof_detail_player_id">ID allenatore: %1$s</string>
+    <string name="hof_detail_playtime">Tempo di gioco: %1$s</string>
+    <string name="hof_detail_inserted_at">Ingresso in Hall of Fame: %1$s</string>
+    <string name="hof_detail_held_item">Oggetto: %1$s</string>
+    <string name="hof_detail_iv_ev">IV %1$s · EV %2$s</string>
+    <string name="hof_detail_delete_confirm_title">Eliminare questa Hall of Fame?</string>
+    <string name="hof_detail_delete_confirm_message">Verranno eliminati anche il suo screenshot e i dati della squadra.</string>
 </resources>

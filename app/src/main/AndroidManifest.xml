@@ -37,6 +37,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+          Phase 3: a content:// URI for the system camera app to write a Hall of Fame entry
+          screenshot into (ActivityResultContracts.TakePicture). No CAMERA permission is declared
+          here — the camera app itself holds it; this app only ever receives the finished photo.
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

@@ -25,9 +25,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.marcogn.hallofmemories.R
-import com.marcogn.hallofmemories.ui.common.ComingSoonScreen
 import com.marcogn.hallofmemories.ui.hack.HackDetailScreen
 import com.marcogn.hallofmemories.ui.hack.HackFormScreen
+import com.marcogn.hallofmemories.ui.hof.HofDetailScreen
+import com.marcogn.hallofmemories.ui.hof.HofFormScreen
 import com.marcogn.hallofmemories.ui.home.HomeScreen
 import com.marcogn.hallofmemories.ui.settings.SettingsScreen
 import com.marcogn.hallofmemories.ui.templates.TemplatesScreen
@@ -122,10 +123,17 @@ fun HallOfMemoriesNavGraph(navController: NavHostController = rememberNavControl
                 )
             }
             composable<Destination.HofDetail> {
-                ComingSoonScreen(phase = 3)
+                HofDetailScreen(
+                    onBack = { navController.popBackStack() },
+                    onEdit = { hackId, entryId -> navController.navigate(Destination.HofForm(hackId = hackId, entryId = entryId)) },
+                    onDeleted = { navController.popBackStack() },
+                )
             }
             composable<Destination.HofForm> {
-                ComingSoonScreen(phase = 3)
+                HofFormScreen(
+                    onSaved = { navController.popBackStack() },
+                    onCancel = { navController.popBackStack() },
+                )
             }
         }
     }
