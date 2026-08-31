@@ -177,6 +177,16 @@ Carried over from the sibling projects; each one cost real debugging time.
   `docs/plan/reference-pokeapi.md` for what to fetch instead.
 - **Never `clearAllTables()`** — cache invalidation must name the cache
   tables explicitly or it takes the user's Halls of Fame with it.
+- **Every Robolectric test class needs `@Config(sdk = [26])`.** Robolectric's
+  shadow jar for this app's `compileSdk` (36) requires a newer JDK than CI
+  runs (`android-ci.yml` pins JDK 17; Robolectric's API 36 `android-all` jar
+  needs a newer one) — without the pin, the test passes locally on a machine
+  with a newer JDK and fails in CI with
+  `UnsupportedOperationException at DefaultSdkProvider.java`, a confusing
+  error that doesn't name the real cause. Pinning to `minSdk` (26) sidesteps
+  it without weakening what's tested. Confirmed by reproducing the CI failure
+  locally under JDK 17 before fixing it — same convention already used by
+  every Robolectric test in ThePatientGamerHelper.
 
 ## Build/test commands
 

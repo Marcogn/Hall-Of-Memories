@@ -11,7 +11,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+// sdk = 26 (minSdk), same as every Robolectric test in ThePatientGamerHelper: Robolectric's
+// shadow jar for the app's compileSdk (36) requires a newer JDK than CI runs (see CLAUDE.md,
+// "Known gotchas") — pinning to minSdk sidesteps that without weakening what's tested here.
+@Config(sdk = [26])
 @RunWith(RobolectricTestRunner::class)
 class ThemePreferencesTest {
 
