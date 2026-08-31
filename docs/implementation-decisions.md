@@ -127,3 +127,25 @@ stale copy onto a device is worse than re-fetching a fresh one.
 of where the bytes go; `LocalBackupManager` owns SAF. v2's `DriveBackupManager`
 is then a sibling class, not a change to the repository or the UI. v1 ships
 the disabled Settings row so the seam is visible and honest.
+
+## The adaptive launcher icon keeps its `-v26` qualifier *(Phase 1)*
+
+Android Lint suggests merging `mipmap-anydpi-v26/` into a plain
+`mipmap-anydpi/` once `minSdk` reaches 26, since the version qualifier reads
+as redundant. Tried it: AAPT2 fails resource linking entirely
+(`resource mipmap/ic_launcher not found`) — an `<adaptive-icon>` XML resource
+apparently still needs the explicit `-v26` folder qualifier to be recognized,
+regardless of `minSdk`. Reverted; the lint suggestion is safe to leave
+un-actioned. Re-verify before trying it again in Phase 6 when the real
+launcher icon is designed.
+
+## PokedexSyncManager uses `Mutex.tryLock`, not `withLock` *(Phase 1)*
+
+`startIfNeeded()`/`forceResync()` are meant to be true no-ops when a sync is
+already running (spec-adjacent requirement from the phase plan: "a second
+call while running is a no-op that returns the same state"). `tryLock()` is
+atomic and either acquires the lock or returns `false` immediately; the
+alternative (`if (mutex.isLocked) return` followed by `withLock`) has a
+race window where two near-simultaneous calls can both observe `isLocked ==
+false` and both proceed, and would spend a stage's worth of no-op work
+re-checking `isStageFresh()` rather than genuinely skipping.

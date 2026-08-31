@@ -41,10 +41,33 @@ file dialogs.
 
 ## Phase 1 — Data and pokédex sync
 
-*(suggested coverage: first-launch sync completes and Settings shows seven
-fresh stages; killing the app mid-sync resumes rather than restarting;
-airplane mode during a sync produces a readable error and a working Retry;
-"invalidate and re-download" refills the cache and leaves user data intact.)*
+1. Fresh install, launch with a normal network connection. The Home screen
+   shows a non-blocking banner ("Downloading pokédex data: <stage> (n/total)")
+   while the sync runs; the rest of the UI (drawer, Settings) stays usable
+   throughout. The banner disappears once every stage completes.
+2. Open Settings → Pokédex data. All seven stages (Species, Moves, Types,
+   Natures, Abilities, Items, Generations) show a last-synced timestamp and
+   an item count roughly matching `docs/plan/reference-pokeapi.md` §2
+   (Species ~1300+, Moves ~937, Natures 25, Abilities ~370, Items ~2000+).
+3. Force-close the app mid-sync (during the Home banner, before it
+   disappears) and relaunch. The sync resumes rather than restarting from
+   Species — stages already completed before the kill keep their timestamp
+   from step 2 unchanged; only the interrupted stage (and anything after it)
+   re-runs.
+4. Turn on airplane mode, then Settings → "Invalidate and re-download". The
+   banner/section shows a readable failure message naming what failed (not a
+   generic "sync failed"), with a working Retry. Turn airplane mode back off
+   and tap Retry: the sync completes normally.
+5. Settings → "Invalidate and re-download" with a normal connection: the
+   confirmation dialog states plainly that hacks/Halls of Fame/templates are
+   unaffected. After confirming, every stage's timestamp and item count
+   refresh. (No hack/Hall of Fame UI exists yet to verify "leaves user data
+   intact" end-to-end — re-verify this step once Phase 2/3 land real data to
+   check against.)
+6. With the sync already complete, force-close and relaunch the app: no
+   banner appears and no new network requests fire (the app opens directly
+   to a synced state) — confirmable via Settings showing unchanged
+   timestamps immediately after relaunch.
 
 ## Phase 2 — Hacks
 
