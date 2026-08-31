@@ -1,0 +1,10 @@
+{
+  "count": 1351,
+  "next": "https://raw.githubusercontent.com/PokeAPI/api-data/master/data/api/v2/pokemon/?offset=50&limit=50",
+  "previous": null,
+  "results": [
+    { "name": "bulbasaur", "url": "/api/v2/pokemon/1/" },
+    { "name": "charmander", "url": "/api/v2/pokemon/4/" },
+    { "name": "mr-mime", "url": "/api/v2/pokemon/122/" }
+  ]
+}

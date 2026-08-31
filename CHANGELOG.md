@@ -17,3 +17,20 @@ release process".
   with light/dark/system switching, an in-app Italian/English language
   picker, a navigation drawer with the three v1 sections (hack library,
   saved Pokémon, settings), and the `Android CI` workflow.
+  - Fixed the launcher's round-icon manifest entry, which pointed at the
+    square icon instead of `ic_launcher_round`.
+- **Local data model and PokéAPI sync (Phase 1).** The app now owns its full
+  Room schema — hacks, Hall of Fame entries, the six-slot teams inside them,
+  reusable Pokémon templates, and the PokéAPI reference cache — and
+  downloads that reference data (species, types, moves, natures, abilities,
+  items, generations) once on first launch, ~57 requests and ~2.5 MB rather
+  than the ~650 MB a naive per-species fetch would take.
+  - The pokédex sync runs in the background without blocking the rest of the
+    app, resumes a stage that was interrupted, and never touches saved
+    hacks, Halls of Fame or templates when invalidated and re-run.
+  - Settings gained a Pokédex data section (per-stage last-sync time and
+    item count, "Invalidate and re-download") and a "Always use the latest
+    sprites" toggle.
+  - Sprite URLs are derived from a hack's generation, never stored, with a
+    verified fallback chain for species or shiny forms a given generation
+    has no sprite for.

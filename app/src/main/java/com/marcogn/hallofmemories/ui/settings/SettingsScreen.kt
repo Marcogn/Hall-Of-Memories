@@ -34,9 +34,11 @@ fun SettingsScreen(
     onMenuClick: () -> Unit,
     modifier: Modifier = Modifier,
     themeViewModel: ThemeViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val themeMode by themeViewModel.themeMode.collectAsState()
     var language by remember { mutableStateOf(currentAppLanguage()) }
+    val uiState by settingsViewModel.uiState.collectAsState()
 
     Scaffold(
         modifier = modifier,
@@ -62,12 +64,22 @@ fun SettingsScreen(
                     applyAppLanguage(it)
                 }
             }
+            SpritesSection(
+                alwaysUseLatestSprites = uiState.alwaysUseLatestSprites,
+                onAlwaysUseLatestSpritesChange = settingsViewModel::setAlwaysUseLatestSprites,
+            )
+            PokedexDataSection(
+                stageStatuses = uiState.stageStatuses,
+                syncState = uiState.syncState,
+                onRetry = settingsViewModel::startSyncIfNeeded,
+                onInvalidateAndRedownload = settingsViewModel::forceResync,
+            )
         }
     }
 }
 
 @Composable
-private fun SettingsSection(title: String, content: @Composable () -> Unit) {
+internal fun SettingsSection(title: String, content: @Composable () -> Unit) {
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
         Text(
             text = title,

@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "name": "hardy",
+  "decreased_stat": null,
+  "increased_stat": null,
+  "likes_flavor": null,
+  "hates_flavor": null,
+  "pokeathlon_stat_changes": [],
+  "move_battle_style_preferences": [],
+  "names": []
+}

@@ -1,0 +1,11 @@
+{
+  "id": 6,
+  "name": "lonely",
+  "decreased_stat": { "name": "defense", "url": "/api/v2/stat/3/" },
+  "increased_stat": { "name": "attack", "url": "/api/v2/stat/2/" },
+  "likes_flavor": { "name": "spicy", "url": "/api/v2/berry-flavor/1/" },
+  "hates_flavor": { "name": "sour", "url": "/api/v2/berry-flavor/3/" },
+  "pokeathlon_stat_changes": [],
+  "move_battle_style_preferences": [],
+  "names": []
+}

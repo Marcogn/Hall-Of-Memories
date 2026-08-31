@@ -1,0 +1,19 @@
+{
+  "id": 13,
+  "name": "electric",
+  "damage_relations": { "double_damage_to": [], "half_damage_to": [], "no_damage_to": [] },
+  "past_damage_relations": [],
+  "game_indices": [],
+  "generation": { "name": "generation-i", "url": "/api/v2/generation/1/" },
+  "move_damage_class": { "name": "special", "url": "/api/v2/move-damage-class/3/" },
+  "names": [],
+  "pokemon": [
+    { "slot": 1, "pokemon": { "name": "pikachu", "url": "/api/v2/pokemon/25/" } },
+    { "slot": 2, "pokemon": { "name": "rotom", "url": "/api/v2/pokemon/479/" } }
+  ],
+  "moves": [
+    { "name": "thunder-shock", "url": "/api/v2/move/84/" },
+    { "name": "thunderbolt", "url": "/api/v2/move/85/" }
+  ],
+  "sprites": {}
+}

@@ -1,0 +1,14 @@
+{
+  "id": 3,
+  "name": "generation-iii",
+  "abilities": [],
+  "main_region": { "name": "hoenn", "url": "/api/v2/region/3/" },
+  "moves": [],
+  "names": [],
+  "pokemon_species": [
+    { "name": "treecko", "url": "/api/v2/pokemon-species/252/" },
+    { "name": "torchic", "url": "/api/v2/pokemon-species/255/" }
+  ],
+  "types": [],
+  "version_groups": []
+}

@@ -40,6 +40,52 @@
     <string name="settings_language_italian">Italian</string>
     <string name="settings_language_english">English</string>
 
+    <!-- Settings — sprites -->
+    <string name="settings_section_sprites">Sprites</string>
+    <string name="settings_sprites_always_latest">Always use the latest sprites</string>
+    <string name="settings_sprites_always_latest_subtitle">Ignores the hack\'s generation and always shows the most recent official artwork.</string>
+
+    <!-- Settings — pokédex data -->
+    <string name="settings_section_pokedex_data">Pokédex data</string>
+    <string name="settings_pokedex_never_synced">Never synced</string>
+    <string name="settings_pokedex_stage_summary">%1$d items · synced on %2$s</string>
+    <string name="settings_pokedex_syncing">Syncing: %1$s (%2$d/%3$d)</string>
+    <string name="settings_pokedex_sync_failed">Sync failed: %1$s</string>
+    <string name="settings_pokedex_retry">Retry</string>
+    <string name="settings_pokedex_redownload_button">Invalidate and re-download</string>
+    <string name="settings_pokedex_redownload_confirm_title">Invalidate and re-download pokédex data?</string>
+    <string name="settings_pokedex_redownload_confirm_message">Species, moves, natures, abilities and item data will be cleared and re-downloaded from PokéAPI. Your hacks, Halls of Fame and saved Pokémon are not affected.</string>
+
+    <!-- Generations -->
+    <string name="generation_rb">Red/Blue</string>
+    <string name="generation_gsc">Gold/Silver/Crystal</string>
+    <string name="generation_rse">Ruby/Sapphire/Emerald</string>
+    <string name="generation_frlg">FireRed/LeafGreen</string>
+    <string name="generation_dppt">Diamond/Pearl/Platinum</string>
+    <string name="generation_hgss">HeartGold/SoulSilver</string>
+    <string name="generation_bw">Black/White</string>
+    <string name="generation_xy">X/Y</string>
+    <string name="generation_oras">Omega Ruby/Alpha Sapphire</string>
+    <string name="generation_sm">Sun/Moon</string>
+    <string name="generation_usum">Ultra Sun/Ultra Moon</string>
+    <string name="generation_swsh">Sword/Shield</string>
+    <string name="generation_sv">Scarlet/Violet</string>
+    <string name="generation_other">Other / ROM hack</string>
+
+    <!-- Pokédex sync stages -->
+    <string name="pokedex_stage_species">Species</string>
+    <string name="pokedex_stage_moves">Moves</string>
+    <string name="pokedex_stage_types">Types</string>
+    <string name="pokedex_stage_natures">Natures</string>
+    <string name="pokedex_stage_abilities">Abilities</string>
+    <string name="pokedex_stage_items">Items</string>
+    <string name="pokedex_stage_generations">Generations</string>
+
+    <!-- Home — pokédex sync banner -->
+    <string name="home_pokedex_syncing">Downloading pokédex data: %1$s (%2$d/%3$d)</string>
+    <string name="home_pokedex_sync_failed">Pokédex data download failed: %1$s</string>
+    <string name="home_pokedex_retry">Retry</string>
+
     <!-- Placeholder for screens not implemented yet -->
     <string name="coming_soon_phase">Coming in Phase %1$d</string>
 </resources>
