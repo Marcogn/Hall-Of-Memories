@@ -67,3 +67,50 @@ release process".
     IV/EV rows; a hack with exactly one entry now shows it inline instead
     of a placeholder, and a hack with several entries gets real
     screenshot/sprite thumbnails and a newest/oldest sort toggle.
+- **Reusable Pokémon templates (Phase 4).** A Pokémon configured once can be
+  reused in any Hall of Fame, in any hack.
+  - The slot editor gained "Save as template" (a label dialog that offers
+    Overwrite or Save as a copy when the name collides with an existing
+    template) and "Load from template" (a bottom sheet that replaces the
+    whole slot, with an Undo snackbar).
+  - The Templates screen (already a drawer destination) now lists every
+    saved template with its sprite, label and species/level, a search field
+    over both label and species, and per-row Edit/Duplicate/Delete — reusing
+    the same slot editor in a template mode rather than a second one.
+  - Deleting a template leaves every Hall of Fame slot created from it
+    completely unaffected — it carries no foreign key, only provenance.
+- **Presentation polish and local backup (Phase 5).** A hack with 2–6 Halls
+  of Fame now shows them as a horizontally scrollable carousel instead of a
+  plain list (a hack with more still gets the list); the screenshot viewer
+  gained double-tap-to-zoom alongside its existing pinch-zoom; Home's grid
+  tiles keep a cover's real aspect ratio instead of a forced crop, with a
+  crossfade on every sprite and cover load.
+  - Settings gained a local Backup section: export everything (every hack
+    and its artwork, every Hall of Fame entry with its screenshot and six
+    slots, every saved template) into a single file via the system's file
+    picker, and import it back on this or any other device. Restoring asks
+    for explicit confirmation first — it fully replaces whatever's
+    currently on the device — and a malformed or newer-than-supported file
+    is rejected with nothing written, never a partial or silent failure.
+  - A disabled "Google Drive backup" row with a "Coming soon" badge marks
+    the v2 seam: the backup logic already knows nothing about where the
+    bytes go, so Drive support later is a new transport, not a rewrite.
+  - The PokéAPI cache is never part of a backup — it's re-downloadable, not
+    user data.
+- **Signing, release pipeline and documentation (Phase 6).** The app can now
+  be cut as a signed, versioned, documented release.
+  - `Build APK` (manual dispatch) decodes a persistent release keystore from
+    repository secrets, builds and signs a release APK, prints its SHA-1 and
+    the decoded keystore's SHA-256, and uploads the APK.
+  - `Release` (manual dispatch, a typed `x.y.z`) validates the version and a
+    non-empty `[Unreleased]` changelog section, cuts the changelog and bumps
+    `versionCode`/`versionName`, builds and signs, publishes a GitHub Release
+    whose body is only the changelog's bold lead-ins plus a link back to it,
+    and — only after the release is live — pushes the version bump to
+    `main`. A signing failure now leaves `main` untouched instead of burning
+    a version number.
+  - Added `LICENSE` (MIT) and `docs/release-signing.md` (keystore
+    generation, secret setup, reading the SHA-1 back out).
+  - Rewrote `README.md` for the shipped app (badges, a features section per
+    phase, build instructions, the TheGamesDB API key note, the franchise
+    disclaimer) in place of the original planning-stage placeholder.

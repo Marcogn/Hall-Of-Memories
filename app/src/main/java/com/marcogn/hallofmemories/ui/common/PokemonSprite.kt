@@ -12,7 +12,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.marcogn.hallofmemories.domain.model.GameGeneration
 import com.marcogn.hallofmemories.domain.sprite.SpriteUrlResolver
 
@@ -35,10 +37,14 @@ fun PokemonSprite(
     }
     var index by remember(candidates) { mutableIntStateOf(0) }
 
+    val context = LocalContext.current
+
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         if (index < candidates.size) {
             AsyncImage(
-                model = candidates[index],
+                model = remember(candidates[index]) {
+                    ImageRequest.Builder(context).data(candidates[index]).crossfade(true).build()
+                },
                 contentDescription = null,
                 onError = { index++ },
                 modifier = Modifier.matchParentSize(),

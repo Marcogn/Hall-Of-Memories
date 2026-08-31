@@ -3,6 +3,7 @@ package com.marcogn.hallofmemories.di
 import android.content.Context
 import androidx.room.Room
 import com.marcogn.hallofmemories.data.local.HallOfMemoriesDatabase
+import com.marcogn.hallofmemories.data.local.dao.BackupDao
 import com.marcogn.hallofmemories.data.local.dao.HackDao
 import com.marcogn.hallofmemories.data.local.dao.HallOfFameDao
 import com.marcogn.hallofmemories.data.local.dao.PokedexDao
@@ -41,4 +42,7 @@ object DatabaseModule {
 
     @Provides
     fun providePokedexDao(database: HallOfMemoriesDatabase): PokedexDao = database.pokedexDao()
+
+    @Provides
+    fun provideBackupDao(database: HallOfMemoriesDatabase): BackupDao = database.backupDao()
 }

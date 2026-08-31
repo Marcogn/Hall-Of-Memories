@@ -12,8 +12,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,10 +44,19 @@ fun SettingsScreen(
     val themeMode by themeViewModel.themeMode.collectAsState()
     var language by remember { mutableStateOf(currentAppLanguage()) }
     val uiState by settingsViewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.backupMessage) {
+        uiState.backupMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            settingsViewModel.consumeBackupMessage()
+        }
+    }
 
     Scaffold(
         modifier = modifier,
         topBar = { HallOfMemoriesTopBar(title = stringResource(R.string.settings_title), onMenuClick = onMenuClick) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState())) {
             SettingsSection(title = stringResource(R.string.settings_section_appearance)) {
@@ -79,6 +91,11 @@ fun SettingsScreen(
             TheGamesDbSection(
                 currentApiKey = remember { settingsViewModel.currentTheGamesDbApiKey() },
                 onSave = settingsViewModel::setTheGamesDbApiKey,
+            )
+            BackupSection(
+                isBusy = uiState.isBackupBusy,
+                onExport = settingsViewModel::exportBackup,
+                onImport = settingsViewModel::importBackup,
             )
         }
     }

@@ -184,21 +184,156 @@ file dialogs.
 
 ## Phase 4 — Templates
 
-*(suggested coverage: save a slot as a template, load it into a different
-hack, verify every field; delete the template and confirm the Hall of Fame is
-untouched.)*
+1. In a Hall of Fame entry's slot editor, fill a slot completely (species,
+   nickname, nature, ability, held item, four moves, IVs, EVs) and tap "Save
+   as template". Confirm the label field is pre-filled from the nickname
+   (or species name if there's no nickname), edit it, and save. Open the
+   Templates screen from the drawer and confirm the new template appears
+   with the right sprite, label and level.
+2. Create a second, unrelated Hall of Fame entry under a *different* hack.
+   Open a slot's editor, tap "Load from template", and pick the template
+   from step 1. Confirm every field arrives (species, nickname, nature,
+   ability, item, all four moves, every IV/EV) and that the sprite renders
+   using this second hack's own generation, not the template's origin hack.
+3. Immediately after loading, tap "Undo" on the snackbar and confirm the
+   slot reverts to exactly what it had before the load (including if it
+   was completely empty before).
+4. Fill a different slot, tap "Save as template", and type a label that
+   exactly matches an existing template's name. Confirm the dialog offers
+   "Overwrite" and "Save as a copy" instead of a single Save button; try
+   "Save as a copy" and confirm the Templates screen now shows two entries
+   with that label. Repeat and choose "Overwrite" instead, confirming the
+   original template's data changes in place (and its position in the
+   list, sorted by most-recently-updated, moves to the top).
+5. From the Templates screen, tap the search field and search by species
+   name (not label) — confirm it still matches. Search by a label
+   substring with accents/case varied and confirm it still matches.
+6. Tap the "+" FAB to create a template directly (not from a slot). Confirm
+   the label field is required (Confirm stays disabled until it's filled)
+   and that saving it makes it immediately available from "Load from
+   template" in any hack's slot editor.
+7. Edit an existing template directly from the Templates screen (tap the
+   row or its edit icon), change a field, and save. Confirm the change
+   sticks and that no Hall of Fame entry that previously loaded this
+   template retroactively changes (denormalized snapshot, not a live
+   reference).
+8. Duplicate a template and confirm the copy has a distinct label
+   ("<name> (copy)"), a different id (editing one never affects the
+   other), and identical payload data.
+9. Delete a template that a saved Hall of Fame slot's `sourceTemplateId`
+   points to. Confirm the confirmation dialog explicitly says existing
+   Halls of Fame are unaffected, and then confirm that slot's data
+   (species, moves, stats, everything) is still fully intact after the
+   delete — only the template itself disappears from the Templates screen.
+10. With the pokédex cache empty (see Phase 3's step 10), open the "New
+    template" editor and confirm the same "not downloaded yet" card and
+    "Download now" action appear as in the Hall of Fame slot editor.
 
 ## Phase 5 — Polish and backup
 
-*(suggested coverage: export to Downloads, uninstall, reinstall, import —
-everything back including images; import a truncated archive and confirm
-nothing changed; the zoomable screenshot viewer; carousel behaviour with 2, 5
-and 20 entries.)*
+1. Build a hack with 2 entries, then 5, then 8. Confirm 2–6 entries render as
+   a horizontally scrollable carousel of preview cards (tap one → its
+   detail), and once there are 7+ it switches to the vertical list with the
+   newest/oldest sort toggle instead.
+2. In the entry detail's screenshot viewer, pinch-zoom in and out, pan while
+   zoomed, and double-tap to zoom in/out. Confirm all three behave smoothly
+   and don't fight each other.
+3. On Home's grid view, add a hack with tall box art and one with wide box
+   art (or just differently-proportioned real covers). Confirm each tile
+   keeps its cover's real aspect ratio (no forced crop) while a hack with no
+   art still renders the fixed 2:3 placeholder. Confirm sprites/covers
+   crossfade in rather than popping in abruptly.
+4. Settings → Backup → Export. Save the file via the system picker, then
+   uninstall and reinstall the app (or clear its data) and use Import to
+   restore it. Confirm every hack, its artwork, every Hall of Fame entry
+   with its screenshot, all six slots per entry, and every saved template
+   are back exactly as before — including ids surviving the round trip
+   (edit an entry post-restore and confirm it doesn't create a duplicate).
+5. Import confirms with an explicit "this replaces everything currently on
+   the device" dialog before doing anything — cancel it and confirm nothing
+   changed.
+6. Export, then manually corrupt the saved zip (e.g. truncate it with a text
+   editor) and try to import it. Confirm the app reports the file is
+   invalid and that nothing on the device changed (existing hacks/entries
+   still intact).
+7. Manually edit a real backup's `data.json` (unzip, bump `formatVersion` to
+   something absurd like `99`, re-zip) and try to import it. Confirm the
+   app shows a specific "this backup is from a newer version" message
+   rather than a generic failure or a crash.
+8. Delete a hack's box art file from outside the app (if accessible on a
+   rooted/emulator device) between export and import to simulate a missing
+   image, or more simply: edit a backup zip to remove one image from
+   `images/` while keeping `data.json`'s reference to it. Import it and
+   confirm the affected hack/entry still imports with everything else
+   intact, minus that one image (placeholder shown), and that the import
+   result message mentions the skipped image count.
+9. Confirm the disabled "Google Drive backup" row in Settings shows its
+   "Coming soon" badge and cannot be interacted with.
 
 ## Phase 6 — Release
 
-*(suggested coverage: install a signed release APK over a previous one; a full
-`Release` workflow dry run on a throwaway version number.)*
+1. Generate a release keystore per `docs/release-signing.md` §1 and add the
+   five GitHub secrets it lists. Run `Build APK` (manual dispatch). Confirm
+   it decodes the keystore, prints its size/SHA-256, builds a signed
+   `app-release.apk`, prints the signing report's SHA-1, and uploads the APK
+   as a workflow artifact.
+2. Install that APK on a device that already has a debug or previous release
+   build installed with the same signature. Confirm it installs over the
+   existing app (same signature = upgrade, not "app not installed").
+3. On a throwaway version number ahead of the current `versionName`, run
+   `Release` (manual dispatch). Confirm: it fails fast if `[Unreleased]` is
+   empty or the version isn't strictly greater; on success it publishes a
+   GitHub Release whose body is only the bold lead-ins pulled from the cut
+   changelog section (not the full section) plus a link back to
+   `CHANGELOG.md`; and only after the release is live does it push the
+   `CHANGELOG.md`/`versionCode`/`versionName` bump to `main`.
+4. Re-run `Release` with a version number that already has a published
+   release/tag. Confirm it refuses rather than overwriting.
+5. Force the build/sign step to fail (e.g. a temporarily wrong keystore
+   password secret) on a throwaway version and confirm `main` is left
+   completely untouched — no partial changelog rewrite, no version bump —
+   so the same version number can be retried after fixing the secret.
+
+*(Steps 1–5 need real GitHub secrets and repository write access, so they
+were not run end-to-end in this app's own development session — the
+workflows were written by porting ThePatientGamerHelper's already-working
+`build-apk.yml`/`release.yml` and are believed correct by inspection, but
+are unverified until run for real. Flag this in the PR/release notes until
+someone with the secrets configured runs steps 1–5 for the first time.)*
+
+### Final full-app regression pass (Phases 0–6)
+
+Run once after Phase 6 lands, covering every shipped phase end to end on a
+single device session, starting from an empty database:
+
+1. First launch: pokédex sync runs in the background without blocking
+   navigation; Settings shows its per-stage progress; the app is usable
+   (create a hack, open Templates) while it's still running.
+2. Create a hack (name, generation, base game, notes), search TheGamesDB
+   for its box art/logo with an API key set, then edit the hack and swap the
+   art for a gallery pick. Delete the hack and confirm its entries/templates
+   references behave per the rules already covered in the Phase 2/3 sections.
+3. Create a Hall of Fame with all six slots filled (mixing template-loaded
+   slots and from-scratch slots), including at least one slot saved as a new
+   template and one loaded from an existing template. Add a screenshot,
+   verify pinch-zoom and double-tap-zoom, save, then reopen and edit it —
+   confirm there is no post-save lock anywhere.
+4. Build a second and third Hall of Fame under the same hack to see the
+   carousel appear at 2 entries, then add enough to push it to 7+ and see it
+   switch to the sortable list.
+5. Switch theme (light/dark/system) and language (IT/EN/system) in Settings;
+   confirm both apply immediately and persist across an app restart.
+6. Toggle "Always use the latest sprites" and confirm sprites update
+   immediately across an already-open entry/slot editor.
+7. Export a full local backup, uninstall and reinstall the app (or clear its
+   data), import it back, and confirm every hack/entry/template and every
+   image round-trips exactly, with no duplicate ids created.
+8. Invalidate and re-download the pokédex cache from Settings; confirm every
+   already-saved hack/entry/template is completely unaffected (denormalized
+   snapshots hold), and that sync resumes cleanly.
+9. Run `./gradlew testDebugUnitTest lintDebug assembleDebug` one final time
+   and confirm all three are green with no new lint categories beyond the
+   already-accepted `PluralsCandidate` informational warnings.
 
 ---
 

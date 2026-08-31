@@ -1,9 +1,11 @@
 package com.marcogn.hallofmemories.di
 
+import com.marcogn.hallofmemories.data.repository.BackupRepositoryImpl
 import com.marcogn.hallofmemories.data.repository.HackRepositoryImpl
 import com.marcogn.hallofmemories.data.repository.HallOfFameRepositoryImpl
 import com.marcogn.hallofmemories.data.repository.PokedexRepositoryImpl
 import com.marcogn.hallofmemories.data.repository.PokemonTemplateRepositoryImpl
+import com.marcogn.hallofmemories.domain.repository.BackupRepository
 import com.marcogn.hallofmemories.domain.repository.HackRepository
 import com.marcogn.hallofmemories.domain.repository.HallOfFameRepository
 import com.marcogn.hallofmemories.domain.repository.PokedexRepository
@@ -33,4 +35,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPokedexRepository(impl: PokedexRepositoryImpl): PokedexRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindBackupRepository(impl: BackupRepositoryImpl): BackupRepository
 }

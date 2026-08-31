@@ -34,6 +34,12 @@
     <string name="templates_title">Pokémon salvati</string>
     <string name="templates_empty_title">Nessun Pokémon salvato</string>
     <string name="templates_empty_subtitle">Salva un Pokémon configurato in una Hall of Fame come modello per riutilizzarlo in qualsiasi altra hack.</string>
+    <string name="templates_search_placeholder">Cerca un Pokémon salvato</string>
+    <string name="templates_no_results_title">Nessun risultato</string>
+    <string name="templates_no_results_subtitle">Nessun Pokémon salvato corrisponde alla ricerca.</string>
+    <string name="templates_duplicate">Duplica</string>
+    <string name="templates_delete_confirm_title">Eliminare \"%1$s\"?</string>
+    <string name="templates_delete_confirm_message">Le Hall of Fame create da questo modello non verranno modificate.</string>
 
     <!-- Impostazioni -->
     <string name="settings_title">Impostazioni</string>
@@ -189,4 +195,34 @@
     <string name="hof_detail_iv_ev">IV %1$s · EV %2$s</string>
     <string name="hof_detail_delete_confirm_title">Eliminare questa Hall of Fame?</string>
     <string name="hof_detail_delete_confirm_message">Verranno eliminati anche il suo screenshot e i dati della squadra.</string>
+
+    <!-- Impostazioni — backup locale -->
+    <string name="settings_section_backup">Backup</string>
+    <string name="settings_backup_description">Esporta tutte le tue hack, Hall of Fame e Pokémon salvati in un unico file. Il ripristino sostituisce completamente i dati presenti sul dispositivo.</string>
+    <string name="settings_backup_export">Esporta</string>
+    <string name="settings_backup_import">Importa</string>
+    <string name="settings_backup_drive_title">Backup su Google Drive</string>
+    <string name="settings_backup_drive_coming_soon">Prossimamente</string>
+    <string name="settings_backup_import_confirm_title">Sostituire tutti i dati?</string>
+    <string name="settings_backup_import_confirm_message">Il ripristino cancella tutte le hack, le Hall of Fame e i Pokémon salvati attualmente sul dispositivo e li sostituisce con quelli del backup. L\'operazione non può essere annullata.</string>
+    <string name="settings_backup_import_confirm_button">Sostituisci</string>
+    <string name="settings_backup_export_success">Backup esportato con successo</string>
+    <string name="settings_backup_export_failed">Esportazione non riuscita: %1$s</string>
+    <string name="settings_backup_import_success">Ripristinate %1$d hack</string>
+    <string name="settings_backup_import_success_with_skipped">Ripristinate %1$d hack (%2$d immagini mancanti nel file)</string>
+    <string name="settings_backup_import_too_new">Questo backup è stato creato con una versione più recente dell\'app. Aggiorna l\'app per poterlo importare.</string>
+    <string name="settings_backup_import_invalid">File di backup non valido</string>
+    <string name="settings_backup_import_failed">Importazione non riuscita: %1$s</string>
+
+    <!-- Hall of Fame: modelli Pokémon riutilizzabili (Fase 4) -->
+    <string name="hof_slot_load_from_template">Carica da un modello</string>
+    <string name="hof_slot_load_from_template_subtitle">Questo sostituisce tutto il contenuto dello slot.</string>
+    <string name="hof_slot_loaded_from_template">Caricato dal modello</string>
+    <string name="hof_slot_undo">Annulla</string>
+    <string name="hof_slot_save_as_template">Salva come modello</string>
+    <string name="hof_template_editor_title">Modello</string>
+    <string name="hof_template_label_label">Nome del modello</string>
+    <string name="hof_template_label_collision">Esiste già un modello chiamato \"%1$s\".</string>
+    <string name="hof_template_overwrite">Sovrascrivi</string>
+    <string name="hof_template_save_as_copy">Salva come copia</string>
 </resources>

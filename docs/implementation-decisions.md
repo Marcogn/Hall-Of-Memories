@@ -232,3 +232,82 @@ the bytes into `filesDir/images/`. No `CAMERA` runtime permission is
 declared: the system camera app that actually handles the intent holds
 that permission itself, this app only ever receives the finished photo
 through the URI it handed out.
+
+## Template conversions live beside SlotDraft, not in domain/model *(Phase 4)*
+
+The phase plan put `PokemonSlot.toTemplateDraft()`/`PokemonTemplate.toSlotDraft()`
+in `domain/model/TemplateConversions.kt`. Implemented in `ui/hof/TemplateConversions.kt`
+instead, converting between `PokemonTemplate` and `SlotDraft` — the
+in-progress, string-backed editing state `SlotEditorDialog` actually
+operates on — rather than a saved `PokemonSlot`. `SlotDraft` was a Phase 3
+addition that didn't exist when the plan was drafted; it has no Android
+import, so the file stays exactly as pure and unit-testable as the plan
+intended (`TemplateConversionsTest` is a plain JVM test), just correctly
+placed on the `ui/` side of the boundary it actually crosses — `domain/`
+has no reason to know about a screen's in-progress editing state.
+
+## Reusing SlotEditorDialog for templates via a mode parameter *(Phase 4)*
+
+The phase plan allowed either reusing `SlotEditorDialog` with a mode
+parameter or writing a second, near-identical editor if reuse "turned out
+to entangle the two." It didn't: `SlotEditorMode.SLOT`/`.TEMPLATE` gate
+exactly two things — a label field replaces the "Load from
+template"/"Save as template" buttons — and every other field (species,
+stats, moves, IV/EV validation) is identical code either way. Editing an
+existing template directly (from the Templates screen) never goes through
+the collision-checking "Save as template" dialog: Confirm just upserts
+that template's own id in place, since typing a label that happens to
+collide with a *different* template isn't a meaningful conflict here
+(`PokemonTemplateEntity.label` has no uniqueness constraint).
+
+## Search normalization extracted to `SearchNormalization.kt` *(Phase 4)*
+
+`HackFilters.kt` (Phase 2) had its own private `String.normalizedForSearch()`
+(NFD-normalize, strip combining marks, lowercase). Phase 4's `TemplateFilters.kt`
+needed the exact same behavior; Kotlin's top-level `private` is file-scoped,
+not package-scoped, so it couldn't be reused as-is. Pulled into an
+`internal` function in `domain/filter/SearchNormalization.kt`, shared by
+both — the alternative (copy-pasting the same six lines a second time) is
+exactly the kind of duplication the project's own conventions call out
+to avoid.
+
+## A new BackupDao, not per-repository `replaceAll()` methods *(Phase 5)*
+
+Restore needs one atomic transaction across hacks, entries, slots and
+templates — four tables owned by three separate repositories
+(`HackRepository`/`HallOfFameRepository`/`PokemonTemplateRepository`), none
+of which has any reason to know about the other two outside of a restore.
+Rather than adding a `replaceAll()` method to each repository interface
+(polluting their normal CRUD-shaped surface with a backup-only operation,
+and still needing something above them to sequence three separate
+transactions into one), `data/local/dao/BackupDao.kt` is a new DAO with
+exactly one job: `@Transaction suspend fun replaceAll(hacks, entries,
+slots, templates)`, the same default-method-in-DAO-interface pattern
+`HallOfFameDao.saveEntryWithSlots` already established in Phase 1.
+`BackupRepositoryImpl` is the only caller. Deleting every hack cascades to
+its entries and slots for free (`ON DELETE CASCADE`); templates are
+cleared with their own `DELETE`, matching `PokemonSlotEntity.sourceTemplateId`
+carrying no foreign key to them.
+
+## `BackupPayload` embeds entries and slots inside their hack, not as flat lists *(Phase 5)*
+
+The DTO shape is `BackupPayload.hacks: List<BackupHackDto>`, each carrying
+`entries: List<BackupEntryDto>`, each carrying `slots: List<BackupSlotDto>`
+— nesting that mirrors the actual foreign-key hierarchy (`Hack` → `HallOfFameEntry`
+→ `PokemonSlot`) instead of three flat top-level lists correlated by id.
+This makes `BackupArchiveBuilder`'s "which images does this payload
+reference" pass a simple recursive walk with no join logic, and makes a
+malformed archive (an entry whose `hackId` doesn't exist, say) structurally
+impossible to represent rather than something import has to validate for.
+
+## Backup import counts skipped images instead of failing the row *(Phase 5)*
+
+Spec §5: "a missing image inside an otherwise valid archive imports the row
+with a null path and reports how many images were skipped." A hand-edited
+or partially-transferred backup file with `data.json` intact but a missing
+`images/` entry is still a fully useful backup — the alternative (failing
+the whole import over one lost screenshot) would throw away far more data
+than the missing image itself represents. `BackupRepositoryImpl.importPayload()`'s
+private `resolveImage()` is the one place this policy lives: a `null` from
+the archive's `images` map increments `imagesSkipped` and resolves to a
+`null` path, never an exception.

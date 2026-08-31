@@ -19,19 +19,26 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,6 +62,7 @@ import com.marcogn.hallofmemories.domain.model.PokedexMove
 import com.marcogn.hallofmemories.domain.model.PokedexNature
 import com.marcogn.hallofmemories.domain.model.PokedexSpecies
 import com.marcogn.hallofmemories.domain.model.PokemonGender
+import com.marcogn.hallofmemories.domain.model.PokemonTemplate
 import com.marcogn.hallofmemories.domain.validation.SlotValidation
 import com.marcogn.hallofmemories.ui.common.ComboBoxSuggestion
 import com.marcogn.hallofmemories.ui.common.EditableComboBox
@@ -65,6 +73,8 @@ import com.marcogn.hallofmemories.ui.common.displayName
 import com.marcogn.hallofmemories.ui.common.typeColorFor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+enum class SlotEditorMode { SLOT, TEMPLATE }
 
 /** All-string mirror of [SlotDraft]'s numeric fields, so a text field can hold whatever the user is mid-typing without forcing it to parse. */
 private data class SlotFormFields(
@@ -191,9 +201,18 @@ fun SlotEditorDialog(
     onDownloadPokedex: () -> Unit,
     onConfirm: (SlotDraft) -> Unit,
     onDismiss: () -> Unit,
+    mode: SlotEditorMode = SlotEditorMode.SLOT,
+    templateLabel: String = "",
+    onTemplateLabelChange: (String) -> Unit = {},
+    templates: List<PokemonTemplate> = emptyList(),
+    onSaveAsTemplate: (draft: SlotDraft, label: String, overwriteId: String?) -> Unit = { _, _, _ -> },
 ) {
     var fields by remember(slotIndex) { mutableStateOf(SlotFormFields.from(initialDraft)) }
+    var previousFieldsForUndo by remember(slotIndex) { mutableStateOf<SlotFormFields?>(null) }
+    var showLoadTemplateSheet by remember(slotIndex) { mutableStateOf(false) }
+    var showSaveAsTemplateDialog by remember(slotIndex) { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember(slotIndex) { SnackbarHostState() }
 
     var speciesQuery by remember(slotIndex) { mutableStateOf("") }
     var speciesResults by remember(slotIndex) { mutableStateOf<List<PokedexSpecies>>(emptyList()) }
@@ -205,13 +224,40 @@ fun SlotEditorDialog(
     }
 
     val evTotal = fields.evTotal()
-    val canConfirm = SlotValidation.isEvTotalValid(evTotal)
+    val isEvTotalValid = SlotValidation.isEvTotalValid(evTotal)
+    val canConfirm = isEvTotalValid && (mode == SlotEditorMode.SLOT || templateLabel.isNotBlank())
+    val loadedFromTemplateMessage = stringResource(R.string.hof_slot_loaded_from_template)
+    val undoLabel = stringResource(R.string.hof_slot_undo)
+
+    fun applyTemplate(template: PokemonTemplate) {
+        previousFieldsForUndo = fields
+        fields = SlotFormFields.from(template.toSlotDraft(slotIndex))
+        showLoadTemplateSheet = false
+        scope.launch {
+            val result = snackbarHostState.showSnackbar(
+                message = loadedFromTemplateMessage,
+                actionLabel = undoLabel,
+                duration = SnackbarDuration.Short,
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                previousFieldsForUndo?.let { fields = it }
+            }
+        }
+    }
 
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(stringResource(R.string.hof_slot_editor_title, slotIndex + 1)) },
+                    title = {
+                        Text(
+                            if (mode == SlotEditorMode.TEMPLATE) {
+                                stringResource(R.string.hof_template_editor_title)
+                            } else {
+                                stringResource(R.string.hof_slot_editor_title, slotIndex + 1)
+                            },
+                        )
+                    },
                     navigationIcon = {
                         IconButton(onClick = onDismiss) {
                             Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.action_cancel))
@@ -224,6 +270,7 @@ fun SlotEditorDialog(
                     },
                 )
             },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -233,6 +280,26 @@ fun SlotEditorDialog(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
+                if (mode == SlotEditorMode.TEMPLATE) {
+                    OutlinedTextField(
+                        value = templateLabel,
+                        onValueChange = onTemplateLabelChange,
+                        label = { Text(stringResource(R.string.hof_template_label_label)) },
+                        singleLine = true,
+                        isError = templateLabel.isBlank(),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                } else {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TextButton(onClick = { showLoadTemplateSheet = true }, enabled = templates.isNotEmpty()) {
+                            Text(stringResource(R.string.hof_slot_load_from_template))
+                        }
+                        TextButton(onClick = { showSaveAsTemplateDialog = true }) {
+                            Text(stringResource(R.string.hof_slot_save_as_template))
+                        }
+                    }
+                }
+
                 if (isPokedexEmpty) {
                     Card {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -363,11 +430,11 @@ fun SlotEditorDialog(
                     },
                     range = SlotValidation.EV_RANGE,
                     totalLabel = stringResource(R.string.hof_slot_ev_total, evTotal, SlotValidation.MAX_EV_TOTAL),
-                    isTotalError = !canConfirm,
+                    isTotalError = !isEvTotalValid,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                if (!canConfirm) {
+                if (!isEvTotalValid) {
                     Text(
                         text = stringResource(R.string.hof_slot_ev_total_error),
                         color = MaterialTheme.colorScheme.error,
@@ -377,6 +444,138 @@ fun SlotEditorDialog(
             }
         }
     }
+
+    if (showLoadTemplateSheet) {
+        LoadTemplateSheet(
+            templates = templates,
+            onSelected = ::applyTemplate,
+            onDismiss = { showLoadTemplateSheet = false },
+        )
+    }
+
+    if (showSaveAsTemplateDialog) {
+        SaveAsTemplateDialog(
+            initialLabel = fields.nickname.ifBlank { fields.speciesName },
+            existingTemplates = templates,
+            onSave = { label, overwriteId ->
+                onSaveAsTemplate(fields.toSlotDraft(slotIndex), label, overwriteId)
+                showSaveAsTemplateDialog = false
+            },
+            onDismiss = { showSaveAsTemplateDialog = false },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LoadTemplateSheet(
+    templates: List<PokemonTemplate>,
+    onSelected: (PokemonTemplate) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState()) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Text(stringResource(R.string.hof_slot_load_from_template), style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(R.string.hof_slot_load_from_template_subtitle),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+            LazyColumn(modifier = Modifier.fillMaxWidth().height(320.dp)) {
+                items(templates, key = { it.id }) { template ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelected(template) }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        if (template.speciesId != null) {
+                            PokemonSprite(
+                                speciesId = template.speciesId,
+                                generation = GameGeneration.OTHER,
+                                shiny = template.isShiny,
+                                alwaysUseLatest = false,
+                                speciesGeneration = null,
+                                modifier = Modifier.size(40.dp),
+                            )
+                        } else {
+                            Box(modifier = Modifier.size(40.dp))
+                        }
+                        Column {
+                            Text(template.label, style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                text = listOfNotNull(
+                                    template.speciesName,
+                                    template.level?.let { stringResource(R.string.hof_slot_level, it) },
+                                ).joinToString(" · "),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SaveAsTemplateDialog(
+    initialLabel: String,
+    existingTemplates: List<PokemonTemplate>,
+    onSave: (label: String, overwriteId: String?) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var label by remember { mutableStateOf(initialLabel) }
+    val trimmedLabel = label.trim()
+    val collision = existingTemplates.firstOrNull { it.label.equals(trimmedLabel, ignoreCase = true) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.hof_slot_save_as_template)) },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = label,
+                    onValueChange = { label = it },
+                    label = { Text(stringResource(R.string.hof_template_label_label)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                if (collision != null) {
+                    Text(
+                        text = stringResource(R.string.hof_template_label_collision, trimmedLabel),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            if (collision != null) {
+                TextButton(onClick = { onSave(trimmedLabel, collision.id) }, enabled = trimmedLabel.isNotBlank()) {
+                    Text(stringResource(R.string.hof_template_overwrite))
+                }
+            } else {
+                TextButton(onClick = { onSave(trimmedLabel, null) }, enabled = trimmedLabel.isNotBlank()) {
+                    Text(stringResource(R.string.action_save))
+                }
+            }
+        },
+        dismissButton = {
+            if (collision != null) {
+                TextButton(onClick = { onSave(trimmedLabel, null) }, enabled = trimmedLabel.isNotBlank()) {
+                    Text(stringResource(R.string.hof_template_save_as_copy))
+                }
+            } else {
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+            }
+        },
+    )
 }
 
 @Composable

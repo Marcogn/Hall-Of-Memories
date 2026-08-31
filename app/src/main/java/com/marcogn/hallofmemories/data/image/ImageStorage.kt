@@ -98,4 +98,21 @@ class ImageStorage @Inject constructor(
             file.delete()
         }
     }
+
+    /** Every file currently in `images/` — used by the backup archive builder to include only images a saved row still references (Phase 5). */
+    suspend fun listAll(): List<File> = withContext(Dispatchers.IO) {
+        imagesDir.listFiles()?.toList() ?: emptyList()
+    }
+
+    /** Writes already-downsampled bytes under the exact [fileName] given (a backup restore, reusing the name the archive stored it under) rather than generating a new UUID. */
+    suspend fun writeBytes(fileName: String, bytes: ByteArray): String = withContext(Dispatchers.IO) {
+        val destination = File(imagesDir, fileName)
+        destination.writeBytes(bytes)
+        destination.absolutePath
+    }
+
+    /** Deletes every file in `images/` — used only by backup restore, which is about to write a full replacement set. */
+    suspend fun clearAll() = withContext(Dispatchers.IO) {
+        imagesDir.listFiles()?.forEach { it.delete() }
+    }
 }

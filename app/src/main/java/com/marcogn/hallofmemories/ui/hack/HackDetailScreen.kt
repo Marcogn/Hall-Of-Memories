@@ -4,13 +4,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -21,6 +25,7 @@ import androidx.compose.material.icons.filled.CatchingPokemon
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,7 +51,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.marcogn.hallofmemories.R
 import com.marcogn.hallofmemories.domain.model.GameGeneration
+import com.marcogn.hallofmemories.domain.model.HallOfFameEntry
 import com.marcogn.hallofmemories.domain.model.HallOfFameEntryWithSlots
+import com.marcogn.hallofmemories.domain.model.PokemonSlot
 import com.marcogn.hallofmemories.ui.common.HackArtwork
 import com.marcogn.hallofmemories.ui.common.PokemonSprite
 import com.marcogn.hallofmemories.ui.common.displayName
@@ -129,6 +136,12 @@ fun HackDetailScreen(
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState())
                         .padding(16.dp),
+                )
+                uiState.entries.size <= 6 -> HallOfFameCarousel(
+                    entries = uiState.sortedEntries,
+                    hackGeneration = hack.generation,
+                    alwaysUseLatestSprites = uiState.alwaysUseLatestSprites,
+                    onEntryClick = onEntryClick,
                 )
                 else -> HallOfFameEntryList(
                     entries = uiState.sortedEntries,
@@ -215,29 +228,13 @@ private fun HallOfFameEntryList(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    Box(modifier = Modifier.size(48.dp)) {
-                        when {
-                            entry.screenshotPath != null -> AsyncImage(
-                                model = entry.screenshotPath,
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize(),
-                            )
-                            slot0?.speciesId != null -> PokemonSprite(
-                                speciesId = slot0.speciesId,
-                                generation = hackGeneration,
-                                shiny = slot0.isShiny,
-                                alwaysUseLatest = alwaysUseLatestSprites,
-                                speciesGeneration = null,
-                                modifier = Modifier.fillMaxSize(),
-                            )
-                            else -> Icon(
-                                imageVector = Icons.Filled.CatchingPokemon,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
+                    EntryThumbnail(
+                        entry = entry,
+                        slot0 = slot0,
+                        hackGeneration = hackGeneration,
+                        alwaysUseLatestSprites = alwaysUseLatestSprites,
+                        modifier = Modifier.size(48.dp),
+                    )
                     Column {
                         Text(text = entry.playerName, style = MaterialTheme.typography.bodyLarge)
                         Text(
@@ -251,6 +248,84 @@ private fun HallOfFameEntryList(
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * A horizontally scrollable row of entry previews (spec §3.1) for a hack with 2–6 entries — a
+ * hack with more than six falls back to [HallOfFameEntryList], where a carousel would stop being
+ * scannable (phase plan §1).
+ */
+@Composable
+private fun HallOfFameCarousel(
+    entries: List<HallOfFameEntryWithSlots>,
+    hackGeneration: GameGeneration,
+    alwaysUseLatestSprites: Boolean,
+    onEntryClick: (String) -> Unit,
+) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        items(entries, key = { it.entry.id }) { entryWithSlots ->
+            val entry = entryWithSlots.entry
+            val slot0 = entryWithSlots.slots.firstOrNull { it.slotIndex == 0 }
+            Card(
+                onClick = { onEntryClick(entry.id) },
+                modifier = Modifier.width(140.dp),
+            ) {
+                EntryThumbnail(
+                    entry = entry,
+                    slot0 = slot0,
+                    hackGeneration = hackGeneration,
+                    alwaysUseLatestSprites = alwaysUseLatestSprites,
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                )
+                Column(modifier = Modifier.padding(8.dp)) {
+                    Text(text = entry.playerName, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(
+                        text = dateFormatter.format(entry.insertedAt.atZone(ZoneId.systemDefault())),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** Screenshot → slot-0 sprite → placeholder icon (spec §3.1), shared by the list row and the carousel tile. */
+@Composable
+private fun EntryThumbnail(
+    entry: HallOfFameEntry,
+    slot0: PokemonSlot?,
+    hackGeneration: GameGeneration,
+    alwaysUseLatestSprites: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        when {
+            entry.screenshotPath != null -> AsyncImage(
+                model = entry.screenshotPath,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+            slot0?.speciesId != null -> PokemonSprite(
+                speciesId = slot0.speciesId,
+                generation = hackGeneration,
+                shiny = slot0.isShiny,
+                alwaysUseLatest = alwaysUseLatestSprites,
+                speciesGeneration = null,
+                modifier = Modifier.fillMaxSize(),
+            )
+            else -> Icon(
+                imageVector = Icons.Filled.CatchingPokemon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

@@ -11,13 +11,17 @@ import com.marcogn.hallofmemories.data.image.ImageStorage
 import com.marcogn.hallofmemories.data.settings.SpritePreferences
 import com.marcogn.hallofmemories.domain.model.GameGeneration
 import com.marcogn.hallofmemories.domain.model.HallOfFameEntry
+import com.marcogn.hallofmemories.domain.model.PokedexAbility
 import com.marcogn.hallofmemories.domain.model.PokedexItem
 import com.marcogn.hallofmemories.domain.model.PokedexMove
+import com.marcogn.hallofmemories.domain.model.PokedexNature
 import com.marcogn.hallofmemories.domain.model.PokedexSpecies
+import com.marcogn.hallofmemories.domain.model.PokemonTemplate
 import com.marcogn.hallofmemories.domain.model.parsePlaytimeMinutes
 import com.marcogn.hallofmemories.domain.repository.HackRepository
 import com.marcogn.hallofmemories.domain.repository.HallOfFameRepository
 import com.marcogn.hallofmemories.domain.repository.PokedexRepository
+import com.marcogn.hallofmemories.domain.repository.PokemonTemplateRepository
 import com.marcogn.hallofmemories.ui.navigation.Destination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -42,6 +46,13 @@ private data class FormCore(
     val hackGeneration: GameGeneration,
 )
 
+private data class PokedexBundle(
+    val natures: List<PokedexNature>,
+    val abilities: List<PokedexAbility>,
+    val alwaysUseLatestSprites: Boolean,
+    val templates: List<PokemonTemplate>,
+)
+
 @HiltViewModel
 class HofFormViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
@@ -49,6 +60,7 @@ class HofFormViewModel @Inject constructor(
     private val hallOfFameRepository: HallOfFameRepository,
     private val hackRepository: HackRepository,
     private val pokedexRepository: PokedexRepository,
+    private val templateRepository: PokemonTemplateRepository,
     private val spritePreferences: SpritePreferences,
     private val imageStorage: ImageStorage,
 ) : ViewModel() {
@@ -72,18 +84,21 @@ class HofFormViewModel @Inject constructor(
         FormCore(d, loading, saving, error, generation)
     }
 
-    val uiState: StateFlow<HofFormUiState> = combine(
-        formCore,
+    private val pokedexBundle = combine(
         pokedexRepository.observeNatures(),
         pokedexRepository.observeAbilities(),
         spritePreferences.alwaysUseLatestSprites,
-    ) { core, natures, abilities, sprites ->
+        templateRepository.observeAll(),
+    ) { natures, abilities, sprites, templates -> PokedexBundle(natures, abilities, sprites, templates) }
+
+    val uiState: StateFlow<HofFormUiState> = combine(formCore, pokedexBundle) { core, pokedex ->
         HofFormUiState(
             draft = core.draft,
             hackGeneration = core.hackGeneration,
-            alwaysUseLatestSprites = sprites,
-            natures = natures,
-            abilities = abilities,
+            alwaysUseLatestSprites = pokedex.alwaysUseLatestSprites,
+            natures = pokedex.natures,
+            abilities = pokedex.abilities,
+            templates = pokedex.templates,
             isEditMode = editingId != null,
             isLoading = core.isLoading,
             isSaving = core.isSaving,
@@ -161,6 +176,22 @@ class HofFormViewModel @Inject constructor(
     suspend fun searchSpecies(query: String): List<PokedexSpecies> = pokedexRepository.searchSpecies(query)
     suspend fun searchItems(query: String): List<PokedexItem> = pokedexRepository.searchItems(query)
     suspend fun searchMoves(query: String): List<PokedexMove> = pokedexRepository.searchMoves(query)
+
+    /** [overwriteId] non-null overwrites that existing template's row (keeping its `createdAt`); null always creates a new one (spec's "overwrite" vs "save as a copy"). */
+    fun saveAsTemplate(draft: SlotDraft, label: String, overwriteId: String?) {
+        viewModelScope.launch {
+            val now = Instant.now()
+            val existingCreatedAt = overwriteId?.let { templateRepository.getById(it)?.createdAt }
+            templateRepository.upsert(
+                draft.toTemplate(
+                    id = overwriteId ?: UUID.randomUUID().toString(),
+                    label = label,
+                    createdAt = existingCreatedAt ?: now,
+                    updatedAt = now,
+                ),
+            )
+        }
+    }
 
     fun save(onSaved: () -> Unit) {
         val current = draft.value
