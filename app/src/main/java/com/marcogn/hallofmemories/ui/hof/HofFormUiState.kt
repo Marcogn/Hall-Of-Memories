@@ -5,6 +5,7 @@ import com.marcogn.hallofmemories.domain.model.PokedexAbility
 import com.marcogn.hallofmemories.domain.model.PokedexNature
 import com.marcogn.hallofmemories.domain.model.PokemonGender
 import com.marcogn.hallofmemories.domain.model.PokemonSlot
+import com.marcogn.hallofmemories.domain.model.PokemonTemplate
 import java.time.Instant
 
 /**
@@ -104,6 +105,7 @@ data class HofFormUiState(
     val alwaysUseLatestSprites: Boolean = false,
     val natures: List<PokedexNature> = emptyList(),
     val abilities: List<PokedexAbility> = emptyList(),
+    val templates: List<PokemonTemplate> = emptyList(),
     val isEditMode: Boolean = false,
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,

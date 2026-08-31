@@ -214,6 +214,8 @@ fun HofFormScreen(
                 slotEditorIndex = null
             },
             onDismiss = { slotEditorIndex = null },
+            templates = uiState.templates,
+            onSaveAsTemplate = viewModel::saveAsTemplate,
         )
     }
 

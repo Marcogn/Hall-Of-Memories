@@ -232,3 +232,41 @@ the bytes into `filesDir/images/`. No `CAMERA` runtime permission is
 declared: the system camera app that actually handles the intent holds
 that permission itself, this app only ever receives the finished photo
 through the URI it handed out.
+
+## Template conversions live beside SlotDraft, not in domain/model *(Phase 4)*
+
+The phase plan put `PokemonSlot.toTemplateDraft()`/`PokemonTemplate.toSlotDraft()`
+in `domain/model/TemplateConversions.kt`. Implemented in `ui/hof/TemplateConversions.kt`
+instead, converting between `PokemonTemplate` and `SlotDraft` — the
+in-progress, string-backed editing state `SlotEditorDialog` actually
+operates on — rather than a saved `PokemonSlot`. `SlotDraft` was a Phase 3
+addition that didn't exist when the plan was drafted; it has no Android
+import, so the file stays exactly as pure and unit-testable as the plan
+intended (`TemplateConversionsTest` is a plain JVM test), just correctly
+placed on the `ui/` side of the boundary it actually crosses — `domain/`
+has no reason to know about a screen's in-progress editing state.
+
+## Reusing SlotEditorDialog for templates via a mode parameter *(Phase 4)*
+
+The phase plan allowed either reusing `SlotEditorDialog` with a mode
+parameter or writing a second, near-identical editor if reuse "turned out
+to entangle the two." It didn't: `SlotEditorMode.SLOT`/`.TEMPLATE` gate
+exactly two things — a label field replaces the "Load from
+template"/"Save as template" buttons — and every other field (species,
+stats, moves, IV/EV validation) is identical code either way. Editing an
+existing template directly (from the Templates screen) never goes through
+the collision-checking "Save as template" dialog: Confirm just upserts
+that template's own id in place, since typing a label that happens to
+collide with a *different* template isn't a meaningful conflict here
+(`PokemonTemplateEntity.label` has no uniqueness constraint).
+
+## Search normalization extracted to `SearchNormalization.kt` *(Phase 4)*
+
+`HackFilters.kt` (Phase 2) had its own private `String.normalizedForSearch()`
+(NFD-normalize, strip combining marks, lowercase). Phase 4's `TemplateFilters.kt`
+needed the exact same behavior; Kotlin's top-level `private` is file-scoped,
+not package-scoped, so it couldn't be reused as-is. Pulled into an
+`internal` function in `domain/filter/SearchNormalization.kt`, shared by
+both — the alternative (copy-pasting the same six lines a second time) is
+exactly the kind of duplication the project's own conventions call out
+to avoid.

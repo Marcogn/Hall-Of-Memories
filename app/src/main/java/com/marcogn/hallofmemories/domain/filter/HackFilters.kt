@@ -2,7 +2,6 @@ package com.marcogn.hallofmemories.domain.filter
 
 import com.marcogn.hallofmemories.domain.model.GameGeneration
 import com.marcogn.hallofmemories.domain.model.HackWithEntryCount
-import java.text.Normalizer
 
 /**
  * Pure hack-library filtering (spec §3.1's Home search + generation filter) — the ViewModel
@@ -20,9 +19,3 @@ fun filterHacks(
         matchesQuery && matchesGeneration
     }
 }
-
-/** Lowercase with diacritics stripped, so "poke" matches "Pokémon" and vice versa. */
-private fun String.normalizedForSearch(): String =
-    Normalizer.normalize(this, Normalizer.Form.NFD)
-        .replace(Regex("\\p{Mn}+"), "")
-        .lowercase()

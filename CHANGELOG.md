@@ -67,3 +67,15 @@ release process".
     IV/EV rows; a hack with exactly one entry now shows it inline instead
     of a placeholder, and a hack with several entries gets real
     screenshot/sprite thumbnails and a newest/oldest sort toggle.
+- **Reusable Pokémon templates (Phase 4).** A Pokémon configured once can be
+  reused in any Hall of Fame, in any hack.
+  - The slot editor gained "Save as template" (a label dialog that offers
+    Overwrite or Save as a copy when the name collides with an existing
+    template) and "Load from template" (a bottom sheet that replaces the
+    whole slot, with an Undo snackbar).
+  - The Templates screen (already a drawer destination) now lists every
+    saved template with its sprite, label and species/level, a search field
+    over both label and species, and per-row Edit/Duplicate/Delete — reusing
+    the same slot editor in a template mode rather than a second one.
+  - Deleting a template leaves every Hall of Fame slot created from it
+    completely unaffected — it carries no foreign key, only provenance.

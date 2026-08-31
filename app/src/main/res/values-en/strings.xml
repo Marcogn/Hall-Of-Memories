@@ -34,6 +34,12 @@
     <string name="templates_title">Saved Pokémon</string>
     <string name="templates_empty_title">No saved Pokémon yet</string>
     <string name="templates_empty_subtitle">Save a Pokémon configured in a Hall of Fame as a template to reuse it in any other hack.</string>
+    <string name="templates_search_placeholder">Search saved Pokémon</string>
+    <string name="templates_no_results_title">No results</string>
+    <string name="templates_no_results_subtitle">No saved Pokémon matches the search.</string>
+    <string name="templates_duplicate">Duplicate</string>
+    <string name="templates_delete_confirm_title">Delete \"%1$s\"?</string>
+    <string name="templates_delete_confirm_message">Halls of Fame created from this template will not be affected.</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
@@ -189,4 +195,16 @@
     <string name="hof_detail_iv_ev">IV %1$s · EV %2$s</string>
     <string name="hof_detail_delete_confirm_title">Delete this Hall of Fame?</string>
     <string name="hof_detail_delete_confirm_message">Its screenshot and team data will be deleted too.</string>
+
+    <!-- Hall of Fame: reusable Pokémon templates (Phase 4) -->
+    <string name="hof_slot_load_from_template">Load from template</string>
+    <string name="hof_slot_load_from_template_subtitle">This replaces everything in the slot.</string>
+    <string name="hof_slot_loaded_from_template">Loaded from template</string>
+    <string name="hof_slot_undo">Undo</string>
+    <string name="hof_slot_save_as_template">Save as template</string>
+    <string name="hof_template_editor_title">Template</string>
+    <string name="hof_template_label_label">Template name</string>
+    <string name="hof_template_label_collision">A template named \"%1$s\" already exists.</string>
+    <string name="hof_template_overwrite">Overwrite</string>
+    <string name="hof_template_save_as_copy">Save as a copy</string>
 </resources>

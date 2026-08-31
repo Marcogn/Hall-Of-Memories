@@ -184,9 +184,50 @@ file dialogs.
 
 ## Phase 4 — Templates
 
-*(suggested coverage: save a slot as a template, load it into a different
-hack, verify every field; delete the template and confirm the Hall of Fame is
-untouched.)*
+1. In a Hall of Fame entry's slot editor, fill a slot completely (species,
+   nickname, nature, ability, held item, four moves, IVs, EVs) and tap "Save
+   as template". Confirm the label field is pre-filled from the nickname
+   (or species name if there's no nickname), edit it, and save. Open the
+   Templates screen from the drawer and confirm the new template appears
+   with the right sprite, label and level.
+2. Create a second, unrelated Hall of Fame entry under a *different* hack.
+   Open a slot's editor, tap "Load from template", and pick the template
+   from step 1. Confirm every field arrives (species, nickname, nature,
+   ability, item, all four moves, every IV/EV) and that the sprite renders
+   using this second hack's own generation, not the template's origin hack.
+3. Immediately after loading, tap "Undo" on the snackbar and confirm the
+   slot reverts to exactly what it had before the load (including if it
+   was completely empty before).
+4. Fill a different slot, tap "Save as template", and type a label that
+   exactly matches an existing template's name. Confirm the dialog offers
+   "Overwrite" and "Save as a copy" instead of a single Save button; try
+   "Save as a copy" and confirm the Templates screen now shows two entries
+   with that label. Repeat and choose "Overwrite" instead, confirming the
+   original template's data changes in place (and its position in the
+   list, sorted by most-recently-updated, moves to the top).
+5. From the Templates screen, tap the search field and search by species
+   name (not label) — confirm it still matches. Search by a label
+   substring with accents/case varied and confirm it still matches.
+6. Tap the "+" FAB to create a template directly (not from a slot). Confirm
+   the label field is required (Confirm stays disabled until it's filled)
+   and that saving it makes it immediately available from "Load from
+   template" in any hack's slot editor.
+7. Edit an existing template directly from the Templates screen (tap the
+   row or its edit icon), change a field, and save. Confirm the change
+   sticks and that no Hall of Fame entry that previously loaded this
+   template retroactively changes (denormalized snapshot, not a live
+   reference).
+8. Duplicate a template and confirm the copy has a distinct label
+   ("<name> (copy)"), a different id (editing one never affects the
+   other), and identical payload data.
+9. Delete a template that a saved Hall of Fame slot's `sourceTemplateId`
+   points to. Confirm the confirmation dialog explicitly says existing
+   Halls of Fame are unaffected, and then confirm that slot's data
+   (species, moves, stats, everything) is still fully intact after the
+   delete — only the template itself disappears from the Templates screen.
+10. With the pokédex cache empty (see Phase 3's step 10), open the "New
+    template" editor and confirm the same "not downloaded yet" card and
+    "Download now" action appear as in the Hall of Fame slot editor.
 
 ## Phase 5 — Polish and backup
 
