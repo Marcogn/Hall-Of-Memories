@@ -7,4 +7,6 @@ data class SettingsUiState(
     val alwaysUseLatestSprites: Boolean = false,
     val stageStatuses: List<PokedexStageStatus> = emptyList(),
     val syncState: SyncState = SyncState.Idle,
+    val isBackupBusy: Boolean = false,
+    val backupMessage: String? = null,
 )

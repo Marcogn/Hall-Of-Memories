@@ -50,7 +50,7 @@ PokéAPI at runtime and are never bundled as assets.
 - **Phase 2 — Hacks, TheGamesDB, box art/logo**: ✅ done
 - **Phase 3 — Hall of Fame entries + six-slot editor**: ✅ done
 - **Phase 4 — Reusable Pokémon templates**: ✅ done
-- **Phase 5 — Presentation polish + local backup**: ⬜ not started
+- **Phase 5 — Presentation polish + local backup**: ✅ done
 - **Phase 6 — Signing, release pipeline, docs**: ⬜ not started
 - **v2 (separate spec)** — Google Drive backup, deliberately out of v1.
 

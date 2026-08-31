@@ -2,6 +2,7 @@ package com.marcogn.hallofmemories.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -37,10 +38,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.marcogn.hallofmemories.R
 import com.marcogn.hallofmemories.domain.model.GameGeneration
 import com.marcogn.hallofmemories.domain.model.HackWithEntryCount
@@ -248,12 +251,35 @@ private fun HackGrid(hacks: List<HackWithEntryCount>, onHackClick: (String) -> U
 private fun HackGridTile(entry: HackWithEntryCount, onClick: () -> Unit) {
     Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Column {
-            HackArtwork(
-                name = entry.hack.name,
-                boxArtPath = entry.hack.boxArtPath,
-                logoPath = entry.hack.logoPath,
-                modifier = Modifier.fillMaxWidth().aspectRatio(2f / 3f).background(MaterialTheme.colorScheme.surfaceVariant),
-            )
+            if (entry.hack.boxArtPath != null) {
+                // Real box art keeps its own aspect ratio (FillWidth, no forced crop) so tiles of
+                // different heights sit without wasted space in the staggered grid — same pattern
+                // as the sibling app's GameGridTile. Only the generated placeholder gets a fixed
+                // 2:3 box below.
+                Box {
+                    AsyncImage(
+                        model = entry.hack.boxArtPath,
+                        contentDescription = null,
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    entry.hack.logoPath?.let { logoPath ->
+                        AsyncImage(
+                            model = logoPath,
+                            contentDescription = null,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.fillMaxWidth(0.7f).align(Alignment.Center),
+                        )
+                    }
+                }
+            } else {
+                HackArtwork(
+                    name = entry.hack.name,
+                    boxArtPath = null,
+                    logoPath = entry.hack.logoPath,
+                    modifier = Modifier.fillMaxWidth().aspectRatio(2f / 3f).background(MaterialTheme.colorScheme.surfaceVariant),
+                )
+            }
             Column(modifier = Modifier.padding(8.dp)) {
                 Text(
                     text = entry.hack.name,

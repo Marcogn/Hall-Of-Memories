@@ -3,6 +3,7 @@ package com.marcogn.hallofmemories.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.marcogn.hallofmemories.data.local.dao.BackupDao
 import com.marcogn.hallofmemories.data.local.dao.HackDao
 import com.marcogn.hallofmemories.data.local.dao.HallOfFameDao
 import com.marcogn.hallofmemories.data.local.dao.PokedexDao
@@ -40,6 +41,7 @@ abstract class HallOfMemoriesDatabase : RoomDatabase() {
     abstract fun hallOfFameDao(): HallOfFameDao
     abstract fun pokemonTemplateDao(): PokemonTemplateDao
     abstract fun pokedexDao(): PokedexDao
+    abstract fun backupDao(): BackupDao
 
     companion object {
         const val DATABASE_NAME = "hall_of_memories.db"

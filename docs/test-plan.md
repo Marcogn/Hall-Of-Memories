@@ -231,10 +231,44 @@ file dialogs.
 
 ## Phase 5 — Polish and backup
 
-*(suggested coverage: export to Downloads, uninstall, reinstall, import —
-everything back including images; import a truncated archive and confirm
-nothing changed; the zoomable screenshot viewer; carousel behaviour with 2, 5
-and 20 entries.)*
+1. Build a hack with 2 entries, then 5, then 8. Confirm 2–6 entries render as
+   a horizontally scrollable carousel of preview cards (tap one → its
+   detail), and once there are 7+ it switches to the vertical list with the
+   newest/oldest sort toggle instead.
+2. In the entry detail's screenshot viewer, pinch-zoom in and out, pan while
+   zoomed, and double-tap to zoom in/out. Confirm all three behave smoothly
+   and don't fight each other.
+3. On Home's grid view, add a hack with tall box art and one with wide box
+   art (or just differently-proportioned real covers). Confirm each tile
+   keeps its cover's real aspect ratio (no forced crop) while a hack with no
+   art still renders the fixed 2:3 placeholder. Confirm sprites/covers
+   crossfade in rather than popping in abruptly.
+4. Settings → Backup → Export. Save the file via the system picker, then
+   uninstall and reinstall the app (or clear its data) and use Import to
+   restore it. Confirm every hack, its artwork, every Hall of Fame entry
+   with its screenshot, all six slots per entry, and every saved template
+   are back exactly as before — including ids surviving the round trip
+   (edit an entry post-restore and confirm it doesn't create a duplicate).
+5. Import confirms with an explicit "this replaces everything currently on
+   the device" dialog before doing anything — cancel it and confirm nothing
+   changed.
+6. Export, then manually corrupt the saved zip (e.g. truncate it with a text
+   editor) and try to import it. Confirm the app reports the file is
+   invalid and that nothing on the device changed (existing hacks/entries
+   still intact).
+7. Manually edit a real backup's `data.json` (unzip, bump `formatVersion` to
+   something absurd like `99`, re-zip) and try to import it. Confirm the
+   app shows a specific "this backup is from a newer version" message
+   rather than a generic failure or a crash.
+8. Delete a hack's box art file from outside the app (if accessible on a
+   rooted/emulator device) between export and import to simulate a missing
+   image, or more simply: edit a backup zip to remove one image from
+   `images/` while keeping `data.json`'s reference to it. Import it and
+   confirm the affected hack/entry still imports with everything else
+   intact, minus that one image (placeholder shown), and that the import
+   result message mentions the skipped image count.
+9. Confirm the disabled "Google Drive backup" row in Settings shows its
+   "Coming soon" badge and cannot be interacted with.
 
 ## Phase 6 — Release
 

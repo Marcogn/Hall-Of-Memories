@@ -79,3 +79,21 @@ release process".
     the same slot editor in a template mode rather than a second one.
   - Deleting a template leaves every Hall of Fame slot created from it
     completely unaffected — it carries no foreign key, only provenance.
+- **Presentation polish and local backup (Phase 5).** A hack with 2–6 Halls
+  of Fame now shows them as a horizontally scrollable carousel instead of a
+  plain list (a hack with more still gets the list); the screenshot viewer
+  gained double-tap-to-zoom alongside its existing pinch-zoom; Home's grid
+  tiles keep a cover's real aspect ratio instead of a forced crop, with a
+  crossfade on every sprite and cover load.
+  - Settings gained a local Backup section: export everything (every hack
+    and its artwork, every Hall of Fame entry with its screenshot and six
+    slots, every saved template) into a single file via the system's file
+    picker, and import it back on this or any other device. Restoring asks
+    for explicit confirmation first — it fully replaces whatever's
+    currently on the device — and a malformed or newer-than-supported file
+    is rejected with nothing written, never a partial or silent failure.
+  - A disabled "Google Drive backup" row with a "Coming soon" badge marks
+    the v2 seam: the backup logic already knows nothing about where the
+    bytes go, so Drive support later is a new transport, not a rewrite.
+  - The PokéAPI cache is never part of a backup — it's re-downloadable, not
+    user data.

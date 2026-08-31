@@ -270,3 +270,44 @@ not package-scoped, so it couldn't be reused as-is. Pulled into an
 both — the alternative (copy-pasting the same six lines a second time) is
 exactly the kind of duplication the project's own conventions call out
 to avoid.
+
+## A new BackupDao, not per-repository `replaceAll()` methods *(Phase 5)*
+
+Restore needs one atomic transaction across hacks, entries, slots and
+templates — four tables owned by three separate repositories
+(`HackRepository`/`HallOfFameRepository`/`PokemonTemplateRepository`), none
+of which has any reason to know about the other two outside of a restore.
+Rather than adding a `replaceAll()` method to each repository interface
+(polluting their normal CRUD-shaped surface with a backup-only operation,
+and still needing something above them to sequence three separate
+transactions into one), `data/local/dao/BackupDao.kt` is a new DAO with
+exactly one job: `@Transaction suspend fun replaceAll(hacks, entries,
+slots, templates)`, the same default-method-in-DAO-interface pattern
+`HallOfFameDao.saveEntryWithSlots` already established in Phase 1.
+`BackupRepositoryImpl` is the only caller. Deleting every hack cascades to
+its entries and slots for free (`ON DELETE CASCADE`); templates are
+cleared with their own `DELETE`, matching `PokemonSlotEntity.sourceTemplateId`
+carrying no foreign key to them.
+
+## `BackupPayload` embeds entries and slots inside their hack, not as flat lists *(Phase 5)*
+
+The DTO shape is `BackupPayload.hacks: List<BackupHackDto>`, each carrying
+`entries: List<BackupEntryDto>`, each carrying `slots: List<BackupSlotDto>`
+— nesting that mirrors the actual foreign-key hierarchy (`Hack` → `HallOfFameEntry`
+→ `PokemonSlot`) instead of three flat top-level lists correlated by id.
+This makes `BackupArchiveBuilder`'s "which images does this payload
+reference" pass a simple recursive walk with no join logic, and makes a
+malformed archive (an entry whose `hackId` doesn't exist, say) structurally
+impossible to represent rather than something import has to validate for.
+
+## Backup import counts skipped images instead of failing the row *(Phase 5)*
+
+Spec §5: "a missing image inside an otherwise valid archive imports the row
+with a null path and reports how many images were skipped." A hand-edited
+or partially-transferred backup file with `data.json` intact but a missing
+`images/` entry is still a fully useful backup — the alternative (failing
+the whole import over one lost screenshot) would throw away far more data
+than the missing image itself represents. `BackupRepositoryImpl.importPayload()`'s
+private `resolveImage()` is the one place this policy lives: a `null` from
+the archive's `images` map increments `imagesSkipped` and resolves to a
+`null` path, never an exception.

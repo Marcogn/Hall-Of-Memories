@@ -196,6 +196,24 @@
     <string name="hof_detail_delete_confirm_title">Delete this Hall of Fame?</string>
     <string name="hof_detail_delete_confirm_message">Its screenshot and team data will be deleted too.</string>
 
+    <!-- Settings — local backup -->
+    <string name="settings_section_backup">Backup</string>
+    <string name="settings_backup_description">Export every hack, Hall of Fame and saved Pokémon into a single file. Restoring fully replaces whatever is currently on this device.</string>
+    <string name="settings_backup_export">Export</string>
+    <string name="settings_backup_import">Import</string>
+    <string name="settings_backup_drive_title">Google Drive backup</string>
+    <string name="settings_backup_drive_coming_soon">Coming soon</string>
+    <string name="settings_backup_import_confirm_title">Replace all data?</string>
+    <string name="settings_backup_import_confirm_message">Restoring deletes every hack, Hall of Fame and saved Pokémon currently on this device and replaces them with what\'s in the backup. This can\'t be undone.</string>
+    <string name="settings_backup_import_confirm_button">Replace</string>
+    <string name="settings_backup_export_success">Backup exported successfully</string>
+    <string name="settings_backup_export_failed">Export failed: %1$s</string>
+    <string name="settings_backup_import_success">Restored %1$d hacks</string>
+    <string name="settings_backup_import_success_with_skipped">Restored %1$d hacks (%2$d images missing from the file)</string>
+    <string name="settings_backup_import_too_new">This backup was created with a newer version of the app. Update the app to import it.</string>
+    <string name="settings_backup_import_invalid">Invalid backup file</string>
+    <string name="settings_backup_import_failed">Import failed: %1$s</string>
+
     <!-- Hall of Fame: reusable Pokémon templates (Phase 4) -->
     <string name="hof_slot_load_from_template">Load from template</string>
     <string name="hof_slot_load_from_template_subtitle">This replaces everything in the slot.</string>
