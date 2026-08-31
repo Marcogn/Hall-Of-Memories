@@ -272,8 +272,68 @@ file dialogs.
 
 ## Phase 6 — Release
 
-*(suggested coverage: install a signed release APK over a previous one; a full
-`Release` workflow dry run on a throwaway version number.)*
+1. Generate a release keystore per `docs/release-signing.md` §1 and add the
+   five GitHub secrets it lists. Run `Build APK` (manual dispatch). Confirm
+   it decodes the keystore, prints its size/SHA-256, builds a signed
+   `app-release.apk`, prints the signing report's SHA-1, and uploads the APK
+   as a workflow artifact.
+2. Install that APK on a device that already has a debug or previous release
+   build installed with the same signature. Confirm it installs over the
+   existing app (same signature = upgrade, not "app not installed").
+3. On a throwaway version number ahead of the current `versionName`, run
+   `Release` (manual dispatch). Confirm: it fails fast if `[Unreleased]` is
+   empty or the version isn't strictly greater; on success it publishes a
+   GitHub Release whose body is only the bold lead-ins pulled from the cut
+   changelog section (not the full section) plus a link back to
+   `CHANGELOG.md`; and only after the release is live does it push the
+   `CHANGELOG.md`/`versionCode`/`versionName` bump to `main`.
+4. Re-run `Release` with a version number that already has a published
+   release/tag. Confirm it refuses rather than overwriting.
+5. Force the build/sign step to fail (e.g. a temporarily wrong keystore
+   password secret) on a throwaway version and confirm `main` is left
+   completely untouched — no partial changelog rewrite, no version bump —
+   so the same version number can be retried after fixing the secret.
+
+*(Steps 1–5 need real GitHub secrets and repository write access, so they
+were not run end-to-end in this app's own development session — the
+workflows were written by porting ThePatientGamerHelper's already-working
+`build-apk.yml`/`release.yml` and are believed correct by inspection, but
+are unverified until run for real. Flag this in the PR/release notes until
+someone with the secrets configured runs steps 1–5 for the first time.)*
+
+### Final full-app regression pass (Phases 0–6)
+
+Run once after Phase 6 lands, covering every shipped phase end to end on a
+single device session, starting from an empty database:
+
+1. First launch: pokédex sync runs in the background without blocking
+   navigation; Settings shows its per-stage progress; the app is usable
+   (create a hack, open Templates) while it's still running.
+2. Create a hack (name, generation, base game, notes), search TheGamesDB
+   for its box art/logo with an API key set, then edit the hack and swap the
+   art for a gallery pick. Delete the hack and confirm its entries/templates
+   references behave per the rules already covered in the Phase 2/3 sections.
+3. Create a Hall of Fame with all six slots filled (mixing template-loaded
+   slots and from-scratch slots), including at least one slot saved as a new
+   template and one loaded from an existing template. Add a screenshot,
+   verify pinch-zoom and double-tap-zoom, save, then reopen and edit it —
+   confirm there is no post-save lock anywhere.
+4. Build a second and third Hall of Fame under the same hack to see the
+   carousel appear at 2 entries, then add enough to push it to 7+ and see it
+   switch to the sortable list.
+5. Switch theme (light/dark/system) and language (IT/EN/system) in Settings;
+   confirm both apply immediately and persist across an app restart.
+6. Toggle "Always use the latest sprites" and confirm sprites update
+   immediately across an already-open entry/slot editor.
+7. Export a full local backup, uninstall and reinstall the app (or clear its
+   data), import it back, and confirm every hack/entry/template and every
+   image round-trips exactly, with no duplicate ids created.
+8. Invalidate and re-download the pokédex cache from Settings; confirm every
+   already-saved hack/entry/template is completely unaffected (denormalized
+   snapshots hold), and that sync resumes cleanly.
+9. Run `./gradlew testDebugUnitTest lintDebug assembleDebug` one final time
+   and confirm all three are green with no new lint categories beyond the
+   already-accepted `PluralsCandidate` informational warnings.
 
 ---
 

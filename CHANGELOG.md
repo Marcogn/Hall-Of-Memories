@@ -97,3 +97,20 @@ release process".
     bytes go, so Drive support later is a new transport, not a rewrite.
   - The PokéAPI cache is never part of a backup — it's re-downloadable, not
     user data.
+- **Signing, release pipeline and documentation (Phase 6).** The app can now
+  be cut as a signed, versioned, documented release.
+  - `Build APK` (manual dispatch) decodes a persistent release keystore from
+    repository secrets, builds and signs a release APK, prints its SHA-1 and
+    the decoded keystore's SHA-256, and uploads the APK.
+  - `Release` (manual dispatch, a typed `x.y.z`) validates the version and a
+    non-empty `[Unreleased]` changelog section, cuts the changelog and bumps
+    `versionCode`/`versionName`, builds and signs, publishes a GitHub Release
+    whose body is only the changelog's bold lead-ins plus a link back to it,
+    and — only after the release is live — pushes the version bump to
+    `main`. A signing failure now leaves `main` untouched instead of burning
+    a version number.
+  - Added `LICENSE` (MIT) and `docs/release-signing.md` (keystore
+    generation, secret setup, reading the SHA-1 back out).
+  - Rewrote `README.md` for the shipped app (badges, a features section per
+    phase, build instructions, the TheGamesDB API key note, the franchise
+    disclaimer) in place of the original planning-stage placeholder.

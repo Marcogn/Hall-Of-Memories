@@ -51,7 +51,7 @@ PokéAPI at runtime and are never bundled as assets.
 - **Phase 3 — Hall of Fame entries + six-slot editor**: ✅ done
 - **Phase 4 — Reusable Pokémon templates**: ✅ done
 - **Phase 5 — Presentation polish + local backup**: ✅ done
-- **Phase 6 — Signing, release pipeline, docs**: ⬜ not started
+- **Phase 6 — Signing, release pipeline, docs**: ✅ done
 - **v2 (separate spec)** — Google Drive backup, deliberately out of v1.
 
 Tick these off as phases land. Do not implement anything not present in
@@ -187,6 +187,11 @@ Carried over from the sibling projects; each one cost real debugging time.
   it without weakening what's tested. Confirmed by reproducing the CI failure
   locally under JDK 17 before fixing it — same convention already used by
   every Robolectric test in ThePatientGamerHelper.
+- **This sandbox's default locale is POSIX (non-UTF-8).** A non-ASCII
+  character (an em dash, accented letter, etc.) in a Kotlin backtick test
+  method name breaks `compileDebugUnitTestKotlin` with an opaque
+  `InvalidPathException`, because the generated `.class` filename can't be
+  encoded in that locale. Keep test names plain ASCII.
 
 ## Build/test commands
 
