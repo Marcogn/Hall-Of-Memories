@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Needed from Phase 1 onward for the PokéAPI sync, and from Phase 2 for TheGamesDB. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".HallOfMemoriesApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.HallOfMemories">
+
+        <!--
+          Phase 5 (Settings, in-app language picker): automatic persistence of the per-app
+          language chosen with AppCompatDelegate.setApplicationLocales() — without this
+          service/meta-data (autoStoreLocales) the preference would have to be saved by hand.
+        -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.HallOfMemories">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

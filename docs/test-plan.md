@@ -17,9 +17,27 @@ file dialogs.
 
 ## Phase 0 — Foundation
 
-*(to be written when Phase 0 lands — suggested coverage: install and launch;
-drawer opens and reaches all three sections; theme switch applies
-immediately; language switch relabels the UI and survives a cold start.)*
+1. Install the debug APK on a device or emulator and launch it. It opens on
+   the hack library, showing the empty state ("No hacks yet" / "Nessuna hack
+   ancora").
+2. Tap the hamburger icon; the drawer opens with three entries: Hall of
+   Memories, Saved Pokémon, Settings.
+3. Tap each drawer entry in turn. Saved Pokémon shows its own empty state;
+   Settings shows the Appearance and Language sections. Reopening the drawer
+   and returning to Hall of Memories does not lose or duplicate back-stack
+   entries (repeatedly switching sections should not make the system back
+   button step through every prior visit).
+4. In Settings, switch the theme radio between System, Light and Dark. Each
+   choice applies immediately, with no visible flash or delay, everywhere in
+   the app (not just the Settings screen).
+5. In Settings, switch the language radio to English, then to Italian, then
+   back to System. Every screen's text relabels immediately with no manual
+   restart. Force-close and relaunch the app: the chosen language (and the
+   chosen theme) are both still applied.
+6. With the system set to a language other than Italian or English, set the
+   in-app language to System and confirm the app falls back to Italian (the
+   default resource locale) rather than crashing or showing raw resource
+   keys.
 
 ## Phase 1 — Data and pokédex sync
 
