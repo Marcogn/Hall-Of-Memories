@@ -1,0 +1,15 @@
+{
+  "code": 200,
+  "status": "Success",
+  "data": {
+    "base_url": {
+      "original": "https://cdn.thegamesdb.net/images/original/"
+    },
+    "images": {
+      "1005": [
+        { "id": 5, "type": "boxart", "side": "back", "filename": "boxart/back/1005-3.jpg" },
+        { "id": 6, "type": "fanart", "filename": "fanart/1005.jpg" }
+      ]
+    }
+  }
+}

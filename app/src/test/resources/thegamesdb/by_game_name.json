@@ -1,0 +1,44 @@
+{
+  "code": 200,
+  "status": "Success",
+  "data": {
+    "count": 2,
+    "games": [
+      {
+        "id": 1004,
+        "game_title": "Pokemon FireRed Version",
+        "release_date": "2004-09-07",
+        "platform": 4,
+        "overview": "A remake of Pokemon Red.",
+        "genres": null,
+        "developers": null
+      },
+      {
+        "id": 1005,
+        "game_title": "Pokemon LeafGreen Version",
+        "release_date": "2004-09-07",
+        "platform": 4,
+        "overview": "A remake of Pokemon Green.",
+        "genres": [1, 2],
+        "developers": [7]
+      }
+    ]
+  },
+  "include": {
+    "boxart": {
+      "base_url": {
+        "original": "https://cdn.thegamesdb.net/images/original/",
+        "thumb": "https://cdn.thegamesdb.net/images/thumb/"
+      },
+      "data": {
+        "1004": [
+          { "id": 1, "type": "boxart", "side": "front", "filename": "boxart/front/1004-1.jpg" },
+          { "id": 2, "type": "boxart", "side": "back", "filename": "boxart/back/1004-2.jpg" }
+        ],
+        "1005": [
+          { "id": 3, "type": "boxart", "side": "back", "filename": "boxart/back/1005-3.jpg" }
+        ]
+      }
+    }
+  }
+}

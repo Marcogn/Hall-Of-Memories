@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -44,7 +46,7 @@ fun SettingsScreen(
         modifier = modifier,
         topBar = { HallOfMemoriesTopBar(title = stringResource(R.string.settings_title), onMenuClick = onMenuClick) },
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
+        Column(modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState())) {
             SettingsSection(title = stringResource(R.string.settings_section_appearance)) {
                 ThemeOption(ThemeMode.SYSTEM, stringResource(R.string.settings_theme_system), themeMode, themeViewModel::setThemeMode)
                 ThemeOption(ThemeMode.LIGHT, stringResource(R.string.settings_theme_light), themeMode, themeViewModel::setThemeMode)
@@ -73,6 +75,10 @@ fun SettingsScreen(
                 syncState = uiState.syncState,
                 onRetry = settingsViewModel::startSyncIfNeeded,
                 onInvalidateAndRedownload = settingsViewModel::forceResync,
+            )
+            TheGamesDbSection(
+                currentApiKey = remember { settingsViewModel.currentTheGamesDbApiKey() },
+                onSave = settingsViewModel::setTheGamesDbApiKey,
             )
         }
     }

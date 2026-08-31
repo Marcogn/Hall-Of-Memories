@@ -1,0 +1,14 @@
+{
+  "code": 200,
+  "status": "Success",
+  "data": {
+    "base_url": {
+      "original": "https://cdn.thegamesdb.net/images/original/"
+    },
+    "images": {
+      "1006": [
+        { "id": 7, "type": "boxart", "side": "front", "filename": "boxart/front/1006-1.jpg" }
+      ]
+    }
+  }
+}

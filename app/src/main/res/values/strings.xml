@@ -11,6 +11,8 @@
     <string name="cd_back">Indietro</string>
     <string name="cd_menu">Menu</string>
     <string name="cd_add">Aggiungi</string>
+    <string name="cd_view_mode_grid">Vista a griglia</string>
+    <string name="cd_view_mode_list">Vista a lista</string>
 
     <!-- Cassetto di navigazione -->
     <string name="drawer_home">Hall of Memories</string>
@@ -22,6 +24,11 @@
     <string name="home_empty_title">Nessuna hack ancora</string>
     <string name="home_empty_subtitle">Una hack rappresenta un gioco o una ROM hack Pokémon: aggiungine una per iniziare a catalogare le tue Hall of Fame.</string>
     <string name="home_empty_action">Aggiungi la tua prima hack</string>
+    <string name="home_search_placeholder">Cerca una hack</string>
+    <string name="home_no_results_title">Nessun risultato</string>
+    <string name="home_no_results_subtitle">Nessuna hack corrisponde alla ricerca o ai filtri attivi.</string>
+    <string name="home_hof_count_one">%1$d Hall of Fame</string>
+    <string name="home_hof_count_other">%1$d Hall of Fame</string>
 
     <!-- Templates (Pokémon riutilizzabili) -->
     <string name="templates_title">Pokémon salvati</string>
@@ -56,6 +63,12 @@
     <string name="settings_pokedex_redownload_confirm_title">Invalidare e riscaricare i dati Pokédex?</string>
     <string name="settings_pokedex_redownload_confirm_message">I dati di specie, mosse, nature, abilità e oggetti verranno cancellati e riscaricati da PokéAPI. Le tue hack, Hall of Fame e i Pokémon salvati non verranno toccati.</string>
 
+    <!-- Impostazioni — TheGamesDB -->
+    <string name="settings_section_thegamesdb">Chiave API TheGamesDB</string>
+    <string name="settings_thegamesdb_explanation">Necessaria per cercare online la copertina e il logo di un gioco. Registrati gratuitamente su thegamesdb.net per ottenerne una.</string>
+    <string name="settings_thegamesdb_api_key_label">Chiave API</string>
+    <string name="settings_thegamesdb_save">Salva</string>
+
     <!-- Generazioni -->
     <string name="generation_rb">Rosso/Blu</string>
     <string name="generation_gsc">Oro/Argento/Cristallo</string>
@@ -85,6 +98,39 @@
     <string name="home_pokedex_syncing">Download dati Pokédex: %1$s (%2$d/%3$d)</string>
     <string name="home_pokedex_sync_failed">Download dati Pokédex non riuscito: %1$s</string>
     <string name="home_pokedex_retry">Riprova</string>
+
+    <!-- Hack: form -->
+    <string name="hack_form_new_title">Nuova hack</string>
+    <string name="hack_form_edit_title">Modifica hack</string>
+    <string name="hack_form_validation_name_required">Il nome è obbligatorio</string>
+    <string name="hack_name_label">Nome</string>
+    <string name="hack_generation_label">Generazione</string>
+    <string name="hack_base_game_title_label">Titolo del gioco base</string>
+    <string name="hack_base_game_title_hint">Il nome del gioco ufficiale su cui si basa questa hack, usato per la ricerca online (es. \"Pokémon FireRed Version\" per Radical Red).</string>
+    <string name="hack_notes_label">Note</string>
+    <string name="hack_artwork_box_art_label">Copertina</string>
+    <string name="hack_artwork_logo_label">Logo</string>
+    <string name="hack_artwork_search_online">Cerca online</string>
+    <string name="hack_artwork_choose_gallery">Scegli dalla galleria</string>
+    <string name="hack_artwork_remove">Rimuovi</string>
+    <string name="hack_artwork_downloading">Download delle immagini in corso…</string>
+    <string name="hack_not_found">Hack non trovata</string>
+
+    <!-- Hack: dettaglio -->
+    <string name="hack_detail_delete_confirm_title">Eliminare questa hack?</string>
+    <string name="hack_detail_delete_confirm_message">Verranno eliminate anche le sue %1$d Hall of Fame.</string>
+    <string name="hack_detail_empty_title">Nessuna Hall of Fame ancora</string>
+    <string name="hack_detail_empty_subtitle">Aggiungi la prima Hall of Fame per questa hack.</string>
+    <string name="hack_detail_add_first_hof">Aggiungi la prima Hall of Fame</string>
+
+    <!-- Ricerca artwork TheGamesDB -->
+    <string name="game_search_dialog_title">Cerca online</string>
+    <string name="game_search_dialog_subtitle">TheGamesDB non contiene ROM hack: cerca il nome del gioco ufficiale su cui si basa questa hack.</string>
+    <string name="game_search_query_label">Titolo del gioco base</string>
+    <string name="game_search_action">Cerca</string>
+    <string name="game_search_missing_api_key">Nessuna chiave API TheGamesDB configurata. Aggiungine una in Impostazioni.</string>
+    <string name="game_search_no_results">Nessun risultato. Prova a cercare il nome del gioco ufficiale su cui si basa la hack.</string>
+    <string name="game_search_failed">Ricerca non riuscita</string>
 
     <!-- Segnaposto per le schermate non ancora implementate -->
     <string name="coming_soon_phase">Arriverà nella Fase %1$d</string>

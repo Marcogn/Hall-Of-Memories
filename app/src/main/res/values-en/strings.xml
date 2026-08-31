@@ -11,6 +11,8 @@
     <string name="cd_back">Back</string>
     <string name="cd_menu">Menu</string>
     <string name="cd_add">Add</string>
+    <string name="cd_view_mode_grid">Grid view</string>
+    <string name="cd_view_mode_list">List view</string>
 
     <!-- Navigation drawer -->
     <string name="drawer_home">Hall of Memories</string>
@@ -22,6 +24,11 @@
     <string name="home_empty_title">No hacks yet</string>
     <string name="home_empty_subtitle">A hack is a Pokémon game or ROM hack: add one to start cataloguing its Halls of Fame.</string>
     <string name="home_empty_action">Add your first hack</string>
+    <string name="home_search_placeholder">Search hacks</string>
+    <string name="home_no_results_title">No results</string>
+    <string name="home_no_results_subtitle">No hack matches the current search or filters.</string>
+    <string name="home_hof_count_one">%1$d Hall of Fame</string>
+    <string name="home_hof_count_other">%1$d Halls of Fame</string>
 
     <!-- Templates (reusable Pokémon) -->
     <string name="templates_title">Saved Pokémon</string>
@@ -56,6 +63,12 @@
     <string name="settings_pokedex_redownload_confirm_title">Invalidate and re-download pokédex data?</string>
     <string name="settings_pokedex_redownload_confirm_message">Species, moves, natures, abilities and item data will be cleared and re-downloaded from PokéAPI. Your hacks, Halls of Fame and saved Pokémon are not affected.</string>
 
+    <!-- Settings — TheGamesDB -->
+    <string name="settings_section_thegamesdb">TheGamesDB API key</string>
+    <string name="settings_thegamesdb_explanation">Needed to search online for a game\'s box art and logo. Sign up for free at thegamesdb.net to get one.</string>
+    <string name="settings_thegamesdb_api_key_label">API key</string>
+    <string name="settings_thegamesdb_save">Save</string>
+
     <!-- Generations -->
     <string name="generation_rb">Red/Blue</string>
     <string name="generation_gsc">Gold/Silver/Crystal</string>
@@ -85,6 +98,39 @@
     <string name="home_pokedex_syncing">Downloading pokédex data: %1$s (%2$d/%3$d)</string>
     <string name="home_pokedex_sync_failed">Pokédex data download failed: %1$s</string>
     <string name="home_pokedex_retry">Retry</string>
+
+    <!-- Hack: form -->
+    <string name="hack_form_new_title">New hack</string>
+    <string name="hack_form_edit_title">Edit hack</string>
+    <string name="hack_form_validation_name_required">Name is required</string>
+    <string name="hack_name_label">Name</string>
+    <string name="hack_generation_label">Generation</string>
+    <string name="hack_base_game_title_label">Base game title</string>
+    <string name="hack_base_game_title_hint">The name of the official game this hack is based on, used for the online search (e.g. \"Pokémon FireRed Version\" for Radical Red).</string>
+    <string name="hack_notes_label">Notes</string>
+    <string name="hack_artwork_box_art_label">Box art</string>
+    <string name="hack_artwork_logo_label">Logo</string>
+    <string name="hack_artwork_search_online">Search online</string>
+    <string name="hack_artwork_choose_gallery">Choose from gallery</string>
+    <string name="hack_artwork_remove">Remove</string>
+    <string name="hack_artwork_downloading">Downloading images…</string>
+    <string name="hack_not_found">Hack not found</string>
+
+    <!-- Hack: detail -->
+    <string name="hack_detail_delete_confirm_title">Delete this hack?</string>
+    <string name="hack_detail_delete_confirm_message">Its %1$d Halls of Fame will be deleted too.</string>
+    <string name="hack_detail_empty_title">No Hall of Fame yet</string>
+    <string name="hack_detail_empty_subtitle">Add the first Hall of Fame for this hack.</string>
+    <string name="hack_detail_add_first_hof">Add the first Hall of Fame</string>
+
+    <!-- TheGamesDB artwork search -->
+    <string name="game_search_dialog_title">Search online</string>
+    <string name="game_search_dialog_subtitle">TheGamesDB doesn\'t catalogue ROM hacks: search for the official game this hack is based on instead.</string>
+    <string name="game_search_query_label">Base game title</string>
+    <string name="game_search_action">Search</string>
+    <string name="game_search_missing_api_key">No TheGamesDB API key configured. Add one in Settings.</string>
+    <string name="game_search_no_results">No results. Try searching for the official game this hack is based on.</string>
+    <string name="game_search_failed">Search failed</string>
 
     <!-- Placeholder for screens not implemented yet -->
     <string name="coming_soon_phase">Coming in Phase %1$d</string>

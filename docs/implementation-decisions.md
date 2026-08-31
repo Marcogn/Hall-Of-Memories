@@ -149,3 +149,35 @@ alternative (`if (mutex.isLocked) return` followed by `withLock`) has a
 race window where two near-simultaneous calls can both observe `isLocked ==
 false` and both proceed, and would spend a stage's worth of no-op work
 re-checking `isStageFresh()` rather than genuinely skipping.
+
+## Artwork deletion is deferred to a successful save *(Phase 2)*
+
+`HackFormViewModel` never calls `imageStorage.delete()` the moment a user
+picks a replacement box art or logo — only the in-memory draft changes. The
+original path is deleted only inside `save()`, after `hackRepository.upsert()`
+has committed, and only if the final saved path actually differs from the
+one the hack had on open. Deleting eagerly at pick-time would leave the
+Room row pointing at a file that no longer exists the moment the user
+discards the edit (system back, or navigating away) instead of saving —
+Room's row is the source of truth, so the file must outlive it until the
+row itself changes.
+
+## Hack detail uses direct icon buttons, not an overflow menu *(Phase 2)*
+
+Matches `ReviewDetailScreen`'s top bar in ThePatientGamerHelper: edit and
+delete are the only two actions a hack detail screen ever has, both always
+relevant, so a three-dot overflow menu would only add a tap with no benefit.
+An overflow menu earns its place once a screen has three or more
+situational actions.
+
+## TheGamesDB platform hint is a static generation→platform map *(Phase 2)*
+
+TheGamesDB has no concept of a ROM hack's generation, only a commercial
+platform. `HackFormViewModel`'s private `GameGeneration.theGamesDbPlatformHint()`
+maps each generation to the console its official games actually shipped on
+(RB → "Game Boy", GSC → "Game Boy Color", RSE/FRLG → "Game Boy Advance",
+DPPT/HGSS/BW → "Nintendo DS", XY/ORAS/SM/USUM → "Nintendo 3DS", SWSH/SV →
+"Nintendo Switch", OTHER → no hint) and passes it to `bestPlatformMatch()` as
+a tiebreaker, never a hard filter — a search still returns every matching
+title across platforms, the hint only reorders which one is likeliest to be
+right when several platforms share a title.

@@ -1,5 +1,6 @@
 package com.marcogn.hallofmemories.ui.common
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -12,13 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.marcogn.hallofmemories.R
 
-/** Top bar shared by every drawer destination: title plus the hamburger menu button. */
+/** Top bar shared by every drawer destination: title, the hamburger menu button, and optional trailing actions. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HallOfMemoriesTopBar(
     title: String,
     onMenuClick: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = { Text(title) },
@@ -27,6 +29,7 @@ fun HallOfMemoriesTopBar(
                 Icon(Icons.Default.Menu, contentDescription = stringResource(R.string.cd_menu))
             }
         },
+        actions = actions,
         scrollBehavior = scrollBehavior,
     )
 }

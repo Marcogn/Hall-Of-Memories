@@ -23,8 +23,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.marcogn.hallofmemories.R
 import com.marcogn.hallofmemories.ui.common.ComingSoonScreen
+import com.marcogn.hallofmemories.ui.hack.HackDetailScreen
+import com.marcogn.hallofmemories.ui.hack.HackFormScreen
 import com.marcogn.hallofmemories.ui.home.HomeScreen
 import com.marcogn.hallofmemories.ui.settings.SettingsScreen
 import com.marcogn.hallofmemories.ui.templates.TemplatesScreen
@@ -84,7 +87,11 @@ fun HallOfMemoriesNavGraph(navController: NavHostController = rememberNavControl
 
         NavHost(navController = navController, startDestination = Destination.Home) {
             composable<Destination.Home> {
-                HomeScreen(onMenuClick = onMenuClick)
+                HomeScreen(
+                    onMenuClick = onMenuClick,
+                    onAddHack = { navController.navigate(Destination.HackForm(hackId = null)) },
+                    onHackClick = { hackId -> navController.navigate(Destination.HackDetail(hackId)) },
+                )
             }
             composable<Destination.Templates> {
                 TemplatesScreen(onMenuClick = onMenuClick)
@@ -93,10 +100,26 @@ fun HallOfMemoriesNavGraph(navController: NavHostController = rememberNavControl
                 SettingsScreen(onMenuClick = onMenuClick)
             }
             composable<Destination.HackDetail> {
-                ComingSoonScreen(phase = 2)
+                HackDetailScreen(
+                    onBack = { navController.popBackStack() },
+                    onEdit = { hackId -> navController.navigate(Destination.HackForm(hackId = hackId)) },
+                    onDeleted = { navController.popBackStack() },
+                    onAddEntry = { hackId -> navController.navigate(Destination.HofForm(hackId = hackId, entryId = null)) },
+                    onEntryClick = { entryId -> navController.navigate(Destination.HofDetail(entryId)) },
+                )
             }
-            composable<Destination.HackForm> {
-                ComingSoonScreen(phase = 2)
+            composable<Destination.HackForm> { backStackEntry ->
+                val isCreating = backStackEntry.toRoute<Destination.HackForm>().hackId == null
+                HackFormScreen(
+                    onSaved = { id ->
+                        navController.popBackStack()
+                        // Editing returns to the HackDetail already underneath in the back stack
+                        // (it re-observes the same id and refreshes on its own); creating has
+                        // nothing underneath yet, so it's pushed here.
+                        if (isCreating) navController.navigate(Destination.HackDetail(id))
+                    },
+                    onCancel = { navController.popBackStack() },
+                )
             }
             composable<Destination.HofDetail> {
                 ComingSoonScreen(phase = 3)
