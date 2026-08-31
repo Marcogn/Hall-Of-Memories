@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hall of Memories</string>
+
+    <!-- Shared across screens -->
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_menu">Menu</string>
+    <string name="cd_add">Add</string>
+
+    <!-- Navigation drawer -->
+    <string name="drawer_home">Hall of Memories</string>
+    <string name="drawer_templates">Saved Pokémon</string>
+    <string name="drawer_settings">Settings</string>
+
+    <!-- Home (hack library) -->
+    <string name="home_title">Your hacks</string>
+    <string name="home_empty_title">No hacks yet</string>
+    <string name="home_empty_subtitle">A hack is a Pokémon game or ROM hack: add one to start cataloguing its Halls of Fame.</string>
+    <string name="home_empty_action">Add your first hack</string>
+
+    <!-- Templates (reusable Pokémon) -->
+    <string name="templates_title">Saved Pokémon</string>
+    <string name="templates_empty_title">No saved Pokémon yet</string>
+    <string name="templates_empty_subtitle">Save a Pokémon configured in a Hall of Fame as a template to reuse it in any other hack.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_theme_label">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_section_language">Language</string>
+    <string name="settings_language_system">System</string>
+    <string name="settings_language_italian">Italian</string>
+    <string name="settings_language_english">English</string>
+
+    <!-- Placeholder for screens not implemented yet -->
+    <string name="coming_soon_phase">Coming in Phase %1$d</string>
+</resources>

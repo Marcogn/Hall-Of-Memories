@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hall of Memories</string>
+
+    <!-- Comuni / condivise fra più schermate -->
+    <string name="action_cancel">Annulla</string>
+    <string name="action_save">Salva</string>
+    <string name="action_delete">Elimina</string>
+    <string name="action_edit">Modifica</string>
+    <string name="action_confirm">Conferma</string>
+    <string name="cd_back">Indietro</string>
+    <string name="cd_menu">Menu</string>
+    <string name="cd_add">Aggiungi</string>
+
+    <!-- Cassetto di navigazione -->
+    <string name="drawer_home">Hall of Memories</string>
+    <string name="drawer_templates">Pokémon salvati</string>
+    <string name="drawer_settings">Impostazioni</string>
+
+    <!-- Home (libreria hack) -->
+    <string name="home_title">Le tue hack</string>
+    <string name="home_empty_title">Nessuna hack ancora</string>
+    <string name="home_empty_subtitle">Una hack rappresenta un gioco o una ROM hack Pokémon: aggiungine una per iniziare a catalogare le tue Hall of Fame.</string>
+    <string name="home_empty_action">Aggiungi la tua prima hack</string>
+
+    <!-- Templates (Pokémon riutilizzabili) -->
+    <string name="templates_title">Pokémon salvati</string>
+    <string name="templates_empty_title">Nessun Pokémon salvato</string>
+    <string name="templates_empty_subtitle">Salva un Pokémon configurato in una Hall of Fame come modello per riutilizzarlo in qualsiasi altra hack.</string>
+
+    <!-- Impostazioni -->
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_section_appearance">Aspetto</string>
+    <string name="settings_theme_label">Tema</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Chiaro</string>
+    <string name="settings_theme_dark">Scuro</string>
+    <string name="settings_section_language">Lingua</string>
+    <string name="settings_language_system">Sistema</string>
+    <string name="settings_language_italian">Italiano</string>
+    <string name="settings_language_english">Inglese</string>
+
+    <!-- Segnaposto per le schermate non ancora implementate -->
+    <string name="coming_soon_phase">Arriverà nella Fase %1$d</string>
+</resources>

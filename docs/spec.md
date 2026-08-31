@@ -46,18 +46,25 @@ status for this plan:
 | A10 | A Hall of Fame entry stays editable in every field forever | **Confirmed.** No post-save lock anywhere in the app. |
 | A11 | ROM hacks reshuffle the official Pokédex; no custom species | **Confirmed.** Every species is resolvable through PokéAPI, so no custom-species editor exists in v1. |
 
-Two additions decided while planning, both flagged for confirmation but not
-blocking (§9):
+One addition decided while planning, confirmed with the user:
 
-- **A12 — Secret ID.** `HallOfFameEntry.playerSecretId` exists as an optional
-  free-text field, hidden behind an "Advanced" disclosure in the form. Adding
-  it now is one nullable column; adding it later is a migration.
-- **A13 — Box art and logo are user-overridable.** TheGamesDB catalogues
+- **A12 — Box art and logo are user-overridable.** TheGamesDB catalogues
   commercial releases, not fan-made ROM hacks: a search for "Radical Red"
   will find nothing while "Pokémon FireRed" will. Every hack can therefore
   take its box art and logo from the gallery instead of from a search, and
   a hack with neither renders a generated placeholder. This is the normal
   path for hacks, not an error path.
+
+Two things considered and explicitly rejected for v1, confirmed with the
+user — do not re-add without an explicit new request:
+
+- **No secret ID field.** A second, hidden trainer identifier was considered
+  (some generations distinguish a public Trainer ID from a secret one) and
+  rejected. `HallOfFameEntry` has no `playerSecretId` column.
+- **No shareable "trainer card" export.** Rendering a Hall of Fame entry as a
+  shareable image is not wanted right now — the user has other, unspecified
+  features in mind for that slot instead. Not a v2 placeholder to build
+  toward; revisit only on explicit request.
 
 ---
 
@@ -86,7 +93,6 @@ HallOfFameEntry
   hackId             String FK -> Hack.id, ON DELETE CASCADE, indexed
   playerName         String
   playerId           String       -- free text, may be blank
-  playerSecretId     String?      -- optional, "Advanced" section
   playtimeText       String       -- as typed, e.g. "42:17"
   playtimeMinutes    Int?         -- parsed from playtimeText when parseable, for sorting/stats
   screenshotPath     String?
@@ -181,7 +187,7 @@ so `(entryId, slotIndex)` stays stable across every edit. `PokemonTemplate` is i
 From a hack page, `+` opens the entry form:
 
 1. Six Pokémon slots (§3.3).
-2. Player name, player ID, (advanced) secret ID, playtime.
+2. Player name, player ID, playtime.
 3. Optional screenshot, from gallery or camera.
 4. Insertion date/time, defaulting to now, editable.
 5. Free-text notes.
@@ -324,13 +330,12 @@ Mirrors ThePatientGamerHelper:
 
 Google Drive backup (v2). Multi-user or account concepts. Custom species
 (A11). Any legality validation (A9). Battle/coverage analysis — that is
-CoverDex's job, not this app's. Sharing/export of a single Hall of Fame as an
-image or PDF: not in v1; revisit only on explicit request.
+CoverDex's job, not this app's. A secret trainer ID field (rejected, not
+just deferred). Sharing/export of a single Hall of Fame as an image or PDF
+(a "trainer card" — rejected for now; the user has other, unspecified
+features in mind for later).
 
-## 9. To confirm with the user
+## 9. Open questions
 
-1. A12 — is the secret ID field wanted at all? It is currently included as an
-   optional, hidden-by-default field.
-2. Whether a Hall of Fame should be exportable as a shareable image
-   (a "trainer card"). Deliberately excluded from v1 above; it is the most
-   obvious v2 feature after Drive backup.
+None currently blocking. Both items raised during planning (a secret ID
+field, a trainer-card export) were resolved — see A12 above and §8.

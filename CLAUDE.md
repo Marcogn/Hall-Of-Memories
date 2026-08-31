@@ -45,7 +45,7 @@ PokéAPI at runtime and are never bundled as assets.
 
 ## Progress status by phase
 
-- **Phase 0 — Foundation**: ⬜ not started
+- **Phase 0 — Foundation**: ✅ done
 - **Phase 1 — Room schema + PokéAPI sync + sprites**: ⬜ not started
 - **Phase 2 — Hacks, TheGamesDB, box art/logo**: ⬜ not started
 - **Phase 3 — Hall of Fame entries + six-slot editor**: ⬜ not started
@@ -79,6 +79,11 @@ Tick these off as phases land. Do not implement anything not present in
 - **Backups never contain the PokéAPI cache** — it is re-downloadable data.
 - **Restore is a full replace**, single transaction, ids and timestamps
   preserved. No merging, no conflict resolution.
+- **No secret trainer ID field.** Considered and rejected, not deferred —
+  `HallOfFameEntry` has no `playerSecretId` column.
+- **No shareable "trainer card" export.** Rendering a Hall of Fame entry as a
+  shareable image is rejected for v1 and not a planned v2 item either — the
+  user has other, unspecified features in mind for that space instead.
 
 ## Architecture
 
@@ -172,6 +177,16 @@ Carried over from the sibling projects; each one cost real debugging time.
   `docs/plan/reference-pokeapi.md` for what to fetch instead.
 - **Never `clearAllTables()`** — cache invalidation must name the cache
   tables explicitly or it takes the user's Halls of Fame with it.
+- **Every Robolectric test class needs `@Config(sdk = [26])`.** Robolectric's
+  shadow jar for this app's `compileSdk` (36) requires a newer JDK than CI
+  runs (`android-ci.yml` pins JDK 17; Robolectric's API 36 `android-all` jar
+  needs a newer one) — without the pin, the test passes locally on a machine
+  with a newer JDK and fails in CI with
+  `UnsupportedOperationException at DefaultSdkProvider.java`, a confusing
+  error that doesn't name the real cause. Pinning to `minSdk` (26) sidesteps
+  it without weakening what's tested. Confirmed by reproducing the CI failure
+  locally under JDK 17 before fixing it — same convention already used by
+  every Robolectric test in ThePatientGamerHelper.
 
 ## Build/test commands
 
@@ -217,5 +232,5 @@ bumps the version, builds, signs, publishes, and only then pushes the bump to
 Google Drive backup (v2, separate spec — v1 ships only the disabled Settings
 row and the repository seam). Any account or multi-user concept. Custom
 Pokémon species. Legality validation. Battle or type-coverage analysis — that
-is CoverDex's job. A statistics screen. Exporting a Hall of Fame as an image
-or PDF.
+is CoverDex's job. A statistics screen. A secret trainer ID field (rejected).
+Exporting a Hall of Fame as an image or PDF ("trainer card", rejected).

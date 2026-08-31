@@ -29,8 +29,8 @@ Layout, top to bottom:
    shows "Slot N — empty" and a plus. Tapping any card opens
    `SlotEditorDialog` for that index.
 2. **Trainer** — player name (required, non-blank; the only save-blocking
-   field), player ID (free text), playtime (free text with a `H:MM` hint),
-   and an "Advanced" expander containing the secret ID.
+   field), player ID (free text), playtime (free text with a `H:MM` hint).
+   No secret ID field — considered and rejected, see `../spec.md` §8.
 3. **Screenshot** — optional, gallery or camera, through `ImageStorage`.
    Camera capture uses `ActivityResultContracts.TakePicture` with a
    `FileProvider` URI; add the provider and its `res/xml/file_paths.xml` in
@@ -133,8 +133,7 @@ ui/hof/HallOfFameContent.kt     the reusable body, also embedded by HackDetailSc
 `HallOfFameContent(entry, hack, viewMode)` renders:
 
 - The screenshot, if any, as a hero image (tap → full-screen zoomable view).
-- The trainer block: name, ID, secret ID (only when set), playtime, recorded-at
-  date.
+- The trainer block: name, ID, playtime, recorded-at date.
 - The team: six cards with sprite, nickname + species, level, gender, shiny
   marker, nature (with its stat arrows), ability, held item, the four moves as
   chips with type colours, and IV/EV rows. Empty slots render as a dimmed
