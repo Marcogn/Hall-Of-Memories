@@ -34,8 +34,8 @@ double-tap-zoom to view), and the date you finished. Dropdowns for
 nature/ability/item/moves are typing aids over real PokéAPI data, never a
 legality filter — any free text is accepted, only numeric ranges are
 validated. **An entry is editable forever** — there is no post-save lock.
-A hack with 2–6 entries shows them as a scrollable carousel; more than that
-switches to a sortable list.
+A hack's entries show as a tappable tile carousel; past 6 it switches to a
+sortable list instead. A floating "+" on the hack's page always adds another.
 
 ### Reusable Pokémon templates
 
