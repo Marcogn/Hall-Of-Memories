@@ -193,6 +193,21 @@ Carried over from the sibling projects; each one cost real debugging time.
   method name breaks `compileDebugUnitTestKotlin` with an opaque
   `InvalidPathException`, because the generated `.class` filename can't be
   encoded in that locale. Keep test names plain ASCII.
+- **`@Insert(onConflict = OnConflictStrategy.REPLACE)` is not an update on a
+  row with `ON DELETE CASCADE` children.** It compiles to SQLite
+  `INSERT OR REPLACE`, which deletes the conflicting row before reinserting
+  it — a real, on-device bug: `HackDao.upsert()` used this for editing an
+  existing hack, and every edit silently cascade-deleted all of that hack's
+  `hall_of_fame_entries` (and their `pokemon_slots`). The row itself looked
+  fine afterward (same id, new values), which is exactly what made it easy
+  to miss. Any table that is the parent side of a cascading foreign key
+  needs a real `@Update` for its edit path — `HackDao`'s `upsert()` now
+  checks `exists(id)` first and dispatches to `@Insert`/`@Update`
+  accordingly. `HallOfFameDao.upsertEntry()` uses the same `REPLACE`
+  pattern but is *not* at risk: `saveEntryWithSlots()` always deletes and
+  fully reinserts all six slots in the same transaction right after, so
+  there's nothing left orphaned. Check any future `REPLACE`-based upsert on
+  a table with cascading children the same way before assuming it's safe.
 
 ## Build/test commands
 
