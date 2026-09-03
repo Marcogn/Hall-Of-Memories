@@ -140,3 +140,7 @@ release process".
 - **Multi-select in the hack library.** Long-pressing a hack now enters
   selection mode, with a top bar to edit (single selection only), delete,
   or select every visible hack, so several hacks can be removed at once.
+- **Real app launcher icon.** The placeholder purple ring is replaced by
+  the app's actual adaptive icon (a Poké Ball inside a teal viewfinder
+  ring), sized across all mipmap densities and scaled to stay clear of
+  circular launcher masks.
