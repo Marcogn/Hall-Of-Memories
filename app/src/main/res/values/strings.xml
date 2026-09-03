@@ -13,6 +13,9 @@
     <string name="cd_add">Aggiungi</string>
     <string name="cd_view_mode_grid">Vista a griglia</string>
     <string name="cd_view_mode_list">Vista a lista</string>
+    <string name="cd_select_all">Seleziona tutto</string>
+    <string name="cd_exit_selection">Esci dalla selezione</string>
+    <string name="cd_selected">Selezionata</string>
 
     <!-- Cassetto di navigazione -->
     <string name="drawer_home">Hall of Memories</string>
@@ -29,6 +32,12 @@
     <string name="home_no_results_subtitle">Nessuna hack corrisponde alla ricerca o ai filtri attivi.</string>
     <string name="home_hof_count_one">%1$d Hall of Fame</string>
     <string name="home_hof_count_other">%1$d Hall of Fame</string>
+    <string name="home_selection_count_one">%1$d selezionata</string>
+    <string name="home_selection_count_other">%1$d selezionate</string>
+    <string name="home_delete_selected_confirm_title_one">Eliminare questa hack?</string>
+    <string name="home_delete_selected_confirm_title_other">Eliminare %1$d hack?</string>
+    <string name="home_delete_selected_confirm_message_one">Verranno eliminate anche le sue %1$d Hall of Fame.</string>
+    <string name="home_delete_selected_confirm_message_other">Verranno eliminate anche le loro %1$d Hall of Fame complessive.</string>
 
     <!-- Templates (Pokémon riutilizzabili) -->
     <string name="templates_title">Pokémon salvati</string>

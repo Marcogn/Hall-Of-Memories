@@ -132,3 +132,11 @@ release process".
   separate-looking buttons doing the same thing; the search defaults to the
   hack's own name (TheGamesDB catalogues many ROM hacks directly), and the
   now-redundant "base game title" field is gone from the form.
+- **Fixed: the hack library overlaid the logo on top of the box art.** Both
+  the grid and list views now show box art alone, matching the box art
+  shown everywhere else in the app.
+- **Fixed: a hack's title wasn't clickable in the list view.** Only the box
+  art opened the hack before; the whole row is now one tap target.
+- **Multi-select in the hack library.** Long-pressing a hack now enters
+  selection mode, with a top bar to edit (single selection only), delete,
+  or select every visible hack, so several hacks can be removed at once.

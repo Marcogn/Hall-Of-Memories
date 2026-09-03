@@ -175,6 +175,20 @@ so `(entryId, slotIndex)` stays stable across every edit. `PokemonTemplate` is i
 ### 3.1 Hacks
 
 - Home is the hack list (grid of box art, list fallback), FAB `+` to create.
+  Long-pressing a hack enters multi-select: the top bar is replaced with
+  close, edit (only when exactly one hack is selected), delete (with a
+  confirmation naming how many Halls of Fame will be lost too) and select-all
+  actions, and tapping any other hack toggles its selection instead of
+  opening it.
+
+  > **Revision, from real on-device use (post-v1):** the grid and list tiles
+  > originally overlaid the logo on top of the box art (both became hard to
+  > read) and, in list view, only the box-art thumbnail was tappable — the
+  > title did nothing. Both were bugs, not intended behavior: this section
+  > already described box-art-only tiles. Fixed alongside adding multi-select,
+  > requested directly after using the app for real. See
+  > `docs/implementation-decisions.md`, "Home library: tap targets and
+  > multi-select".
 - Creation form: name, generation (§3.5), notes, and a single optional
   "Search online" step against TheGamesDB (query defaults to the hack's own
   name — see A12's correction above) that fills box art + logo together.

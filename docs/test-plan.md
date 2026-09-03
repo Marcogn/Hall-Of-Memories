@@ -375,6 +375,34 @@ on-device use" for the root cause of each.
    records — no merge prompt, no warning. This is expected for now; only
    verify it doesn't crash or corrupt either record.
 
+## Home library: tap targets and multi-select
+
+See `docs/implementation-decisions.md`, "Home library: tap targets and
+multi-select" for the root cause of the two bugs below.
+
+1. Add a hack with both box art and a logo (via "Search online" or the
+   gallery). In the grid view, confirm only the box art shows — no logo
+   overlaid on top of it, in any tile. Switch to list view and confirm the
+   same: box art only, no overlaid logo. A hack with a logo but no box art
+   should still show its logo (or, with neither, the generated placeholder).
+2. In list view, tap the hack's title/subtitle text (not the thumbnail) and
+   confirm it opens the hack, exactly like tapping the thumbnail does.
+3. Long-press any hack, in either view. Confirm the top bar is replaced with
+   a close action, a delete action, and a select-all action, and that the
+   long-pressed hack is shown as selected.
+4. While in selection mode, tap a different hack and confirm it becomes
+   selected too (without opening it), and that an edit action now also
+   appears in the top bar.
+5. With exactly one hack selected, tap edit and confirm it opens that hack's
+   edit form. Select a second hack and confirm the edit action disappears.
+6. Tap select-all and confirm every currently visible hack (respecting the
+   active search/generation filters) becomes selected. Tap delete, confirm
+   the dialog names the right hack/entry counts, confirm, and verify every
+   selected hack and its Halls of Fame are gone.
+7. While in selection mode, press the system back button/gesture and
+   confirm it exits selection mode (deselecting everything) rather than
+   leaving the Home screen.
+
 ## Known regressions
 
 - **Editing a hack silently deleted its Hall of Fame entries.** Room's
@@ -387,3 +415,14 @@ on-device use" for the root cause of each.
   single `REPLACE`-based `upsert()` with real `@Insert`/`@Update` methods
   dispatched by an existence check, so editing a hack is now a true `UPDATE`
   that never touches its children.
+- **The hack library overlaid the logo on top of the box art.** Both
+  `HackGridTile`'s inline layout and `HackListRow` (via the shared
+  `HackArtwork` composable) drew the logo centered over the box art whenever
+  a hack had both, even though this file's Phase 2/§3.1 description was
+  always "grid of box art" — a code bug, not a spec mismatch. Found from
+  real usage: any hack with both images looked cluttered in the library.
+  Fixed by having both tiles show box art alone and only falling back to the
+  logo (or the placeholder) when there is no box art at all.
+- **A hack's title wasn't clickable in list view.** `HackListRow` only put
+  `onClick` on the artwork thumbnail; tapping the title or the rest of the
+  row did nothing. Fixed by moving the click handler to the whole row.

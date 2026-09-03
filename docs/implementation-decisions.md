@@ -420,3 +420,57 @@ legitimately sharing a display name (a hack and an unrelated remake, say)
 would need the check to be advisory rather than a hard block. Left open,
 not attempted in this round — flagged here so it isn't mistaken for an
 oversight.
+
+## Home library: tap targets and multi-select
+
+Three related changes to `ui/home/HomeScreen.kt`, requested directly after
+using the library for real. Not a phase — outside the v1 roadmap entirely.
+
+### Grid and list tiles overlaid the logo on top of the box art
+
+`HackGridTile` drew the logo in a `Box` centered over the box art whenever a
+hack had both, and `HackListRow` called the shared `HackArtwork` composable
+— which does the same thing by design, since it also serves `HackDetailScreen`
+(logo-only header, `boxArtPath = null`, so the overlay branch never triggers
+there) — with both paths populated. This section of `docs/spec.md` already
+described Home as box-art-only; the code just didn't match it. Fixed by
+having both tiles render box art alone, and by only reaching the logo-alone
+path (or the placeholder) when a hack has no box art at all.
+`HackArtwork` itself is unchanged — still shared with `HackDetailScreen`,
+which passes `boxArtPath = null` and still wants its own logo-or-placeholder
+fallback.
+
+### Only the box-art thumbnail was clickable in list view
+
+`HackListRow` put `onClick` on the artwork's `Surface` only; the title and
+the rest of the row had no click handler at all. Replaced the `Surface` with
+a plain `Box` (rounded via `Modifier.clip`, since `Surface` no longer
+supplies it) and moved the click handling to the whole `Row`.
+
+### Multi-select: long-press enters selection mode
+
+Requested as a new capability: long-pressing a hack (grid or list) now
+selects it and swaps Home's top bar for a contextual one (close, edit —
+enabled only for exactly one selection, delete with a confirmation naming
+the total Hall of Fame entries at stake, select-all). Tapping another hack
+while active toggles it instead of navigating; the system back gesture exits
+selection instead of leaving the screen (`BackHandler`, same pattern as
+`HofFormScreen`'s unsaved-changes guard).
+
+State lives in `HomeViewModel` as a plain `MutableStateFlow<Set<String>>` of
+selected hack ids, combined into `HomeUiState` alongside the existing
+search/filter/view-mode state — `HomeUiState.isSelectionMode` is a computed
+property (`selectedHackIds.isNotEmpty()`), not a separate flag to keep in
+sync. `HomeViewModel.combine()` already used the 5-flow overload for its
+other state, so the selection flow is combined in a second step (`Flow<T>.
+combine(otherFlow) { ... }`) rather than switching every branch to the
+vararg/array-based overload for one more input.
+
+`Modifier.combinedClickable` (needed for the long-press) is
+`@ExperimentalFoundationApi`, same class of gotcha already noted in
+`CLAUDE.md` for `LazyVerticalStaggeredGrid` — the missing `@OptIn` is always
+a hard compile error in Kotlin, but this sandbox has no Android SDK to
+compile against locally (see `CLAUDE.md`, "Build/test commands"), so it
+first surfaced as an `Android CI` failure on the pushed PR. Confirmed by
+reading that failure's actual compiler output before fixing it, rather than
+guessing.

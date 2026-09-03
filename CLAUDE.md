@@ -159,9 +159,10 @@ Carried over from the sibling projects; each one cost real debugging time.
 - **The system back gesture bypasses a screen's custom `onBack`** — Compose
   Navigation's own callback just calls `popBackStack()`. Any screen with
   custom back logic needs an explicit `BackHandler`.
-- **`FlowRow`/`FlowColumn` need `@OptIn(ExperimentalLayoutApi::class)`** and
-  `LazyVerticalStaggeredGrid` needs `@OptIn(ExperimentalFoundationApi::class)`
-  on this Compose BOM — a missing annotation is a build error, not a warning.
+- **`FlowRow`/`FlowColumn` need `@OptIn(ExperimentalLayoutApi::class)`**,
+  `LazyVerticalStaggeredGrid` and `Modifier.combinedClickable` (long-press
+  support) both need `@OptIn(ExperimentalFoundationApi::class)`, on this
+  Compose BOM — a missing annotation is a build error, not a warning.
 - **kotlinx.serialization defaults do not cover an explicit `null`.** A
   default value only fills a *missing* key; `"field": null` still throws
   unless the type is nullable. Set `coerceInputValues = true` too.
