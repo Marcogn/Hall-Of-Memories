@@ -13,4 +13,7 @@ data class HomeUiState(
     val selectedGenerations: Set<GameGeneration> = emptySet(),
     val viewMode: ViewMode = ViewMode.LIST,
     val syncState: SyncState = SyncState.Idle,
-)
+    val selectedHackIds: Set<String> = emptySet(),
+) {
+    val isSelectionMode: Boolean get() = selectedHackIds.isNotEmpty()
+}

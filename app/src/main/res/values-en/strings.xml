@@ -13,6 +13,9 @@
     <string name="cd_add">Add</string>
     <string name="cd_view_mode_grid">Grid view</string>
     <string name="cd_view_mode_list">List view</string>
+    <string name="cd_select_all">Select all</string>
+    <string name="cd_exit_selection">Exit selection</string>
+    <string name="cd_selected">Selected</string>
 
     <!-- Navigation drawer -->
     <string name="drawer_home">Hall of Memories</string>
@@ -29,6 +32,12 @@
     <string name="home_no_results_subtitle">No hack matches the current search or filters.</string>
     <string name="home_hof_count_one">%1$d Hall of Fame</string>
     <string name="home_hof_count_other">%1$d Halls of Fame</string>
+    <string name="home_selection_count_one">%1$d selected</string>
+    <string name="home_selection_count_other">%1$d selected</string>
+    <string name="home_delete_selected_confirm_title_one">Delete this hack?</string>
+    <string name="home_delete_selected_confirm_title_other">Delete %1$d hacks?</string>
+    <string name="home_delete_selected_confirm_message_one">Its %1$d Halls of Fame will be deleted too.</string>
+    <string name="home_delete_selected_confirm_message_other">Their %1$d Halls of Fame will be deleted too.</string>
 
     <!-- Templates (reusable Pokémon) -->
     <string name="templates_title">Saved Pokémon</string>

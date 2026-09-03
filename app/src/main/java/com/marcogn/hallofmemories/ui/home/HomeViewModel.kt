@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.marcogn.hallofmemories.data.settings.ViewModePreferences
 import com.marcogn.hallofmemories.domain.filter.filterHacks
 import com.marcogn.hallofmemories.domain.model.GameGeneration
+import com.marcogn.hallofmemories.domain.model.HackWithEntryCount
+import com.marcogn.hallofmemories.domain.model.SyncState
 import com.marcogn.hallofmemories.domain.model.ViewMode
 import com.marcogn.hallofmemories.domain.repository.HackRepository
 import com.marcogn.hallofmemories.domain.repository.PokedexRepository
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -27,6 +30,7 @@ class HomeViewModel @Inject constructor(
     private val searchQuery = MutableStateFlow("")
     private val selectedGenerations = MutableStateFlow<Set<GameGeneration>>(emptySet())
     private val viewMode = MutableStateFlow(viewModePreferences.homeViewMode)
+    private val selectedHackIds = MutableStateFlow<Set<String>>(emptySet())
 
     val uiState: StateFlow<HomeUiState> = combine(
         hackRepository.observeAll(),
@@ -35,19 +39,30 @@ class HomeViewModel @Inject constructor(
         viewMode,
         pokedexRepository.syncState,
     ) { hacks, query, generations, viewMode, syncState ->
+        HomeFilterState(hacks, query, generations, viewMode, syncState)
+    }.combine(selectedHackIds) { filterState, selectedIds ->
         HomeUiState(
             isLoading = false,
-            hacks = filterHacks(hacks, query, generations),
-            allHacksEmpty = hacks.isEmpty(),
-            searchQuery = query,
-            selectedGenerations = generations,
-            viewMode = viewMode,
-            syncState = syncState,
+            hacks = filterHacks(filterState.hacks, filterState.query, filterState.generations),
+            allHacksEmpty = filterState.hacks.isEmpty(),
+            searchQuery = filterState.query,
+            selectedGenerations = filterState.generations,
+            viewMode = filterState.viewMode,
+            syncState = filterState.syncState,
+            selectedHackIds = selectedIds,
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = HomeUiState(viewMode = viewModePreferences.homeViewMode),
+    )
+
+    private data class HomeFilterState(
+        val hacks: List<HackWithEntryCount>,
+        val query: String,
+        val generations: Set<GameGeneration>,
+        val viewMode: ViewMode,
+        val syncState: SyncState,
     )
 
     init {
@@ -74,4 +89,25 @@ class HomeViewModel @Inject constructor(
     }
 
     fun retrySync() = pokedexRepository.startSyncIfNeeded()
+
+    /** Long-press starts selection mode; while active, tapping any other hack toggles it too. */
+    fun onToggleSelection(hackId: String) {
+        selectedHackIds.update { current -> if (hackId in current) current - hackId else current + hackId }
+    }
+
+    fun onSelectAll() {
+        selectedHackIds.value = uiState.value.hacks.map { it.hack.id }.toSet()
+    }
+
+    fun onClearSelection() {
+        selectedHackIds.value = emptySet()
+    }
+
+    fun deleteSelected() {
+        val ids = selectedHackIds.value
+        selectedHackIds.value = emptySet()
+        viewModelScope.launch {
+            ids.forEach { hackRepository.deleteById(it) }
+        }
+    }
 }

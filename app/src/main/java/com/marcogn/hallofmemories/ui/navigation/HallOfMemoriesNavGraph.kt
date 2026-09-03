@@ -150,6 +150,7 @@ fun HallOfMemoriesNavGraph(navController: NavHostController = rememberNavControl
                     onMenuClick = onMenuClick,
                     onAddHack = { if (entry.lifecycleIsResumed()) navController.navigate(Destination.HackForm(hackId = null)) },
                     onHackClick = { hackId -> if (entry.lifecycleIsResumed()) navController.navigate(Destination.HackDetail(hackId)) },
+                    onEditHack = { hackId -> if (entry.lifecycleIsResumed()) navController.navigate(Destination.HackForm(hackId = hackId)) },
                 )
             }
             composable<Destination.Templates> {
