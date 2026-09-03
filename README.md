@@ -22,7 +22,8 @@ search fetches box art and logo together from TheGamesDB (it catalogues many
 well-known ROM hacks directly, searched by the hack's own name) or you can
 pick either from your gallery; a generated placeholder covers whatever
 neither provides, as a normal path, not a fallback for an error. Search and
-generation filters, list/grid view on the home screen.
+generation filters, list/grid view on the home screen. Long-press a hack to
+select it (and others), then edit, delete, or select all from the top bar.
 
 ### Halls of Fame
 
