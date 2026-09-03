@@ -1,6 +1,7 @@
 package com.marcogn.hallofmemories.ui.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -335,6 +336,7 @@ private fun HackList(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HackListRow(
     entry: HackWithEntryCount,
@@ -414,6 +416,7 @@ private fun HackGrid(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HackGridTile(
     entry: HackWithEntryCount,
