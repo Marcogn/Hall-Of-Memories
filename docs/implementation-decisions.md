@@ -77,12 +77,21 @@ deletion into saved Halls of Fame or block the deletion outright — both wrong.
 
 ## Box art and logo are optional and user-overridable *(planning)*
 
-TheGamesDB catalogues commercial releases. A search for a ROM hack's own name
-("Radical Red") returns nothing; the base game ("Pokémon FireRed Version")
-does. This is the *normal* case for this app, so the UI frames the search as
-"find the base game's artwork", offers a gallery pick as an equal alternative,
-and renders a deterministic name-derived placeholder when there is neither.
-An empty result set is phrased as information, not failure.
+TheGamesDB catalogues commercial releases; a hack not listed there returns no
+results by its own name. This is a *normal* case for this app, so the UI
+offers a gallery pick as an equal alternative and renders a deterministic
+name-derived placeholder when there is neither. An empty result set is
+phrased as information, not failure.
+
+> **Correction, from real on-device use (post-Phase-6):** the original
+> assumption above — "a search for a ROM hack's own name returns nothing" —
+> was wrong. TheGamesDB does catalogue many well-known ROM hacks directly
+> (confirmed by the user searching one up and finding it). The search now
+> defaults to the hack's own name first (not a separate "base game title"
+> field, which was removed from the form as redundant) and only needs a
+> gallery pick/placeholder fallback for hacks TheGamesDB genuinely doesn't
+> have — a narrower case than originally designed for, but the same fallback
+> chain still covers it correctly.
 
 Logos are stored as PNG rather than the JPEG used for other images: a JPEG
 re-encode destroys the transparency that makes a clear-logo usable over a
@@ -311,3 +320,103 @@ than the missing image itself represents. `BackupRepositoryImpl.importPayload()`
 private `resolveImage()` is the one place this policy lives: a `null` from
 the archive's `images` map increments `imagesSkipped` and resolves to a
 `null` path, never an exception.
+
+## Post-launch bug-fix round, from real on-device use
+
+Seven issues reported after Phases 0–6 shipped and were used for real. Not a
+phase — v1's roadmap was already complete — but worth recording the same way.
+
+### `HackDao.upsert()` used `INSERT OR REPLACE`, silently wiping a hack's Hall of Fame on every edit
+
+The most serious of the seven: editing an existing hack (name, generation,
+artwork, notes — any field) deleted every Hall of Fame entry underneath it,
+slots included, with no error and no warning. Root cause: Room's
+`OnConflictStrategy.REPLACE` compiles to SQLite `INSERT OR REPLACE`, which is
+not an update — on a primary-key conflict SQLite deletes the existing row
+first, then inserts the new one. `hall_of_fame_entries.hackId` has
+`ON DELETE CASCADE` onto `hacks.id` (and `pokemon_slots.entryId` cascades the
+same way off `hall_of_fame_entries.id`), so the delete-then-insert silently
+cascaded away every entry and slot on every single hack edit — the hack row
+itself survived (same id, new field values), which is exactly why it looked
+like an ordinary, working edit.
+
+Fixed by giving `HackDao` real `@Insert`/`@Update` methods and a `@Transaction`
+default-method `upsert()` that checks `exists(id)` first and dispatches to
+whichever one actually applies — an `UPDATE` never deletes the row, so no
+cascade fires. `HallOfFameDao.saveEntryWithSlots()` uses the same `REPLACE`
+pattern on `upsertEntry()` but was never at risk: it always deletes and fully
+reinserts all six slots in the same transaction right after, so the
+cascade-delete it also triggers is invisible — it's an entry editing its own
+children, not a hack's edit wiping a *different* table's rows out from under
+it with nothing to rebuild them afterward.
+
+### Screen transitions felt slow, and a fast double-tap could land on a mid-transition screen
+
+Ported the exact fix already shipped in ThePatientGamerHelper (found via its
+git history, not still described in its own `CLAUDE.md`): `NavHost` gained
+explicit 300 ms slide+fade `enterTransition`/`exitTransition`/
+`popEnterTransition`/`popExitTransition` (replacing Navigation Compose's
+default ~700 ms crossfade, which keeps the outgoing screen composed and
+clickable while it fades out), and every `navigate()`/`popBackStack()` call
+site in the graph is now guarded by a `NavBackStackEntry.lifecycleIsResumed()`
+check on the specific entry that owns the callback — a `NavBackStackEntry`
+only reaches `RESUMED` once its own transition has fully settled, so a tap
+landing mid-animation is silently ignored instead of firing a second,
+unintended navigation. No new dependency, same as the sibling.
+
+### Hack detail: FAB, logo-only header, always a tile preview
+
+Three related UI changes, from how the screen was actually used rather than
+how it was originally speced: (1) a `FloatingActionButton` now exists on
+`HackDetailScreen` unconditionally — before this, `onAddEntry` was wired only
+to the empty-state's text link, so a hack that already had at least one entry
+had no way to add another from its detail screen at all. (2) The header now
+passes `boxArtPath = null` to the shared `HackArtwork` composable, showing the
+logo alone (or the generated placeholder) — box art stays the identity shown
+in the library's list/grid (`HackArtwork` itself is unchanged, still used
+there with box art), but repeating a large box art image here too was
+judged unnecessary once the FAB and carousel already carry the screen. (3)
+The `entries.size == 1` branch that rendered the full six-slot
+`HallOfFameContent` inline was removed — a hack with exactly one entry now
+renders through the same `HallOfFameCarousel` tile as 2–6 entries, so the
+"tap a tile to open the entry" interaction is consistent regardless of count,
+rather than one entry behaving like a detail page and two+ behaving like a
+gallery.
+
+### One TheGamesDB search instead of two, and it defaults to the hack's own name
+
+Two originally-separate corrections that turned out to share one root cause.
+`GameArtSearchCoordinator.downloadArt()` already fetched both box art and
+logo from a single `Games/Images` call for whichever result the user picked
+— the "two searches" impression was purely a UI artifact of `HackFormScreen`
+rendering two identical "Search online" buttons, one per artwork slot, both
+wired to the same dialog. There's now exactly one "Search online" action,
+above both artwork previews.
+
+Separately: the original assumption that "TheGamesDB has no ROM hacks, so
+search the *base game* instead" (see the "Box art and logo are optional"
+entry above, and its correction) meant the query defaulted to a manually
+typed "base game title" field rather than the hack's own name. That field is
+now gone from the form entirely — the search defaults to `draft.name` — since
+TheGamesDB does catalogue many hacks directly and a hack's own name is the
+obviously-correct first guess. The underlying `baseGameTitle` column stays on
+`Hack`/`HackEntity` unused rather than being dropped (no schema migration for
+a single now-unedited nullable field) — `HackFormViewModel.onSearchResultSelected()`
+still writes it from a selected search result as harmless provenance, it's
+just no longer surfaced or user-editable.
+
+### Duplicate hacks are not detected or merged — deliberately left open
+
+Adding "the same hack" twice creates two independent rows: `HackDao` has no
+uniqueness constraint on `name` (unlike ThePatientGamerHelper's Platform/
+Genre/Tag lookup tables, which are shared many-to-many reference data with a
+`UNIQUE` index on a normalized name — a structurally different case from
+`Hack`, which is itself primary user content, the same category as
+`ReviewEntity`/`BacklogItemEntity`, neither of which dedupes by title in that
+app either). Fixing this for real needs a name-collision check *and* a
+merge/confirm UX ("a hack named X already exists — open it instead?") that
+doesn't exist as a pattern anywhere in either app yet, and two hacks
+legitimately sharing a display name (a hack and an unrelated remake, say)
+would need the check to be advisory rather than a hard block. Left open,
+not attempted in this round — flagged here so it isn't mistaken for an
+oversight.

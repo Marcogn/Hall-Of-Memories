@@ -125,14 +125,17 @@ fun HackFormScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            OutlinedTextField(
-                value = uiState.draft.baseGameTitle,
-                onValueChange = viewModel::onBaseGameTitleChange,
-                label = { Text(stringResource(R.string.hack_base_game_title_label)) },
-                supportingText = { Text(stringResource(R.string.hack_base_game_title_hint)) },
-                singleLine = true,
+            // One search fetches both box art and logo together (GameArtSearchCoordinator already
+            // downloads both from a single selected result) — a single entry point here instead of
+            // a separate "search online" per artwork slot avoids implying two independent searches.
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-            )
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(stringResource(R.string.hack_artwork_section_title), style = MaterialTheme.typography.titleSmall)
+                TextButton(onClick = ::openSearchDialog) { Text(stringResource(R.string.hack_artwork_search_online)) }
+            }
 
             if (uiState.isDownloadingArt) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -144,7 +147,6 @@ fun HackFormScreen(
             ArtworkSlot(
                 label = stringResource(R.string.hack_artwork_box_art_label),
                 imagePath = uiState.draft.boxArtPath,
-                onSearchOnline = ::openSearchDialog,
                 onPickFromGallery = {
                     boxArtLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
@@ -154,7 +156,6 @@ fun HackFormScreen(
             ArtworkSlot(
                 label = stringResource(R.string.hack_artwork_logo_label),
                 imagePath = uiState.draft.logoPath,
-                onSearchOnline = ::openSearchDialog,
                 onPickFromGallery = {
                     logoLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
@@ -203,7 +204,6 @@ fun HackFormScreen(
 private fun ArtworkSlot(
     label: String,
     imagePath: String?,
-    onSearchOnline: () -> Unit,
     onPickFromGallery: () -> Unit,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
@@ -235,7 +235,6 @@ private fun ArtworkSlot(
             }
         }
         Row {
-            TextButton(onClick = onSearchOnline) { Text(stringResource(R.string.hack_artwork_search_online)) }
             TextButton(onClick = onPickFromGallery) { Text(stringResource(R.string.hack_artwork_choose_gallery)) }
             TextButton(onClick = onRemove, enabled = imagePath != null) { Text(stringResource(R.string.hack_artwork_remove)) }
         }

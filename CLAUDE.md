@@ -73,9 +73,10 @@ Tick these off as phases land. Do not implement anything not present in
   cascade into, or block, the Halls of Fame made from it.
 - **Sprite URLs are derived, never stored**, from
   `(speciesId, generation, shiny, alwaysUseLatestSprites)`.
-- **Box art and logo are user-overridable and optional.** TheGamesDB has no
-  ROM hacks in it; a gallery pick or a generated placeholder is the normal
-  path, not an error path.
+- **Box art and logo are user-overridable and optional.** TheGamesDB
+  catalogues many well-known ROM hacks directly (searched by the hack's own
+  name first), but far from all of them; a gallery pick or a generated
+  placeholder is the normal path for the rest, not an error path.
 - **Backups never contain the PokéAPI cache** — it is re-downloadable data.
 - **Restore is a full replace**, single transaction, ids and timestamps
   preserved. No merging, no conflict resolution.

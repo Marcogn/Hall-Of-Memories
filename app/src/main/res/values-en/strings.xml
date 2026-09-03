@@ -111,9 +111,8 @@
     <string name="hack_form_validation_name_required">Name is required</string>
     <string name="hack_name_label">Name</string>
     <string name="hack_generation_label">Generation</string>
-    <string name="hack_base_game_title_label">Base game title</string>
-    <string name="hack_base_game_title_hint">The name of the official game this hack is based on, used for the online search (e.g. \"Pokémon FireRed Version\" for Radical Red).</string>
     <string name="hack_notes_label">Notes</string>
+    <string name="hack_artwork_section_title">Box art and logo</string>
     <string name="hack_artwork_box_art_label">Box art</string>
     <string name="hack_artwork_logo_label">Logo</string>
     <string name="hack_artwork_search_online">Search online</string>
@@ -128,11 +127,12 @@
     <string name="hack_detail_empty_title">No Hall of Fame yet</string>
     <string name="hack_detail_empty_subtitle">Add the first Hall of Fame for this hack.</string>
     <string name="hack_detail_add_first_hof">Add the first Hall of Fame</string>
+    <string name="hack_detail_add_hof">Add Hall of Fame</string>
 
     <!-- TheGamesDB artwork search -->
     <string name="game_search_dialog_title">Search online</string>
-    <string name="game_search_dialog_subtitle">TheGamesDB doesn\'t catalogue ROM hacks: search for the official game this hack is based on instead.</string>
-    <string name="game_search_query_label">Base game title</string>
+    <string name="game_search_dialog_subtitle">Search for the hack\'s own name — TheGamesDB catalogues many well-known ROM hacks alongside official games. If it isn\'t found, try the official base game\'s name instead.</string>
+    <string name="game_search_query_label">Game name</string>
     <string name="game_search_action">Search</string>
     <string name="game_search_missing_api_key">No TheGamesDB API key configured. Add one in Settings.</string>
     <string name="game_search_no_results">No results. Try searching for the official game this hack is based on.</string>

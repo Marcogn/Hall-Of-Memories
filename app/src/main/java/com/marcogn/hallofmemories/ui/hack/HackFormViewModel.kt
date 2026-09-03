@@ -100,7 +100,6 @@ class HackFormViewModel @Inject constructor(
 
     fun onNameChange(value: String) = updateDraft { it.copy(name = value) }
     fun onGenerationChange(value: GameGeneration) = updateDraft { it.copy(generation = value) }
-    fun onBaseGameTitleChange(value: String) = updateDraft { it.copy(baseGameTitle = value) }
     fun onNotesChange(value: String) = updateDraft { it.copy(notes = value) }
 
     // Deliberately not deleted from disk here: the change isn't committed until save(), and the
@@ -125,8 +124,10 @@ class HackFormViewModel @Inject constructor(
     fun onLogoRemoved() = updateDraft { it.copy(logoPath = null, logoUrl = null) }
 
     fun onSearchOnlineOpened() {
+        // TheGamesDB does catalogue a number of well-known ROM hacks directly, so the hack's own
+        // name is searched first — a separate "base game" title is no longer needed to find it.
         search.update {
-            it.copy(query = draft.value.baseGameTitle.ifBlank { draft.value.name }, results = emptyList(), message = null)
+            it.copy(query = draft.value.name, results = emptyList(), message = null)
         }
     }
 

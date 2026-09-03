@@ -111,9 +111,8 @@
     <string name="hack_form_validation_name_required">Il nome è obbligatorio</string>
     <string name="hack_name_label">Nome</string>
     <string name="hack_generation_label">Generazione</string>
-    <string name="hack_base_game_title_label">Titolo del gioco base</string>
-    <string name="hack_base_game_title_hint">Il nome del gioco ufficiale su cui si basa questa hack, usato per la ricerca online (es. \"Pokémon FireRed Version\" per Radical Red).</string>
     <string name="hack_notes_label">Note</string>
+    <string name="hack_artwork_section_title">Copertina e logo</string>
     <string name="hack_artwork_box_art_label">Copertina</string>
     <string name="hack_artwork_logo_label">Logo</string>
     <string name="hack_artwork_search_online">Cerca online</string>
@@ -128,11 +127,12 @@
     <string name="hack_detail_empty_title">Nessuna Hall of Fame ancora</string>
     <string name="hack_detail_empty_subtitle">Aggiungi la prima Hall of Fame per questa hack.</string>
     <string name="hack_detail_add_first_hof">Aggiungi la prima Hall of Fame</string>
+    <string name="hack_detail_add_hof">Aggiungi Hall of Fame</string>
 
     <!-- Ricerca artwork TheGamesDB -->
     <string name="game_search_dialog_title">Cerca online</string>
-    <string name="game_search_dialog_subtitle">TheGamesDB non contiene ROM hack: cerca il nome del gioco ufficiale su cui si basa questa hack.</string>
-    <string name="game_search_query_label">Titolo del gioco base</string>
+    <string name="game_search_dialog_subtitle">Cerca il nome della hack — TheGamesDB include molte ROM hack conosciute oltre ai giochi ufficiali. Se non la trovi, prova il nome del gioco ufficiale su cui si basa.</string>
+    <string name="game_search_query_label">Nome del gioco</string>
     <string name="game_search_action">Cerca</string>
     <string name="game_search_missing_api_key">Nessuna chiave API TheGamesDB configurata. Aggiungine una in Impostazioni.</string>
     <string name="game_search_no_results">Nessun risultato. Prova a cercare il nome del gioco ufficiale su cui si basa la hack.</string>

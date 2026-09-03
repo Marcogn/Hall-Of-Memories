@@ -17,12 +17,12 @@ Offline-first, single user, no account, no telemetry.
 
 ### Hacks
 
-Catalogue each game or ROM hack you play — name, generation, base game
-title, notes. Box art and logo are searched on TheGamesDB (matched to the
-hack's generation) or picked from your gallery; TheGamesDB has no ROM hacks
-in it, so a gallery pick or a generated placeholder is the normal path here,
-not a fallback for an error. Search and generation filters, list/grid view
-on the home screen.
+Catalogue each game or ROM hack you play — name, generation, notes. A single
+search fetches box art and logo together from TheGamesDB (it catalogues many
+well-known ROM hacks directly, searched by the hack's own name) or you can
+pick either from your gallery; a generated placeholder covers whatever
+neither provides, as a normal path, not a fallback for an error. Search and
+generation filters, list/grid view on the home screen.
 
 ### Halls of Fame
 

@@ -1,5 +1,14 @@
 package com.marcogn.hallofmemories.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CatchingPokemon
@@ -18,6 +27,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -34,6 +45,42 @@ import com.marcogn.hallofmemories.ui.settings.SettingsScreen
 import com.marcogn.hallofmemories.ui.templates.TemplatesScreen
 import kotlinx.coroutines.launch
 
+// A NavBackStackEntry only reaches RESUMED once its enter/exit transition animation has fully
+// completed and it is settled on top of the back stack. Gating every navigate()/popBackStack()
+// call behind this check on the *specific* entry that owns the callback is the officially
+// recommended fix for a fast double-tap landing on a screen that is still being composed/torn
+// down mid-transition instead of the intended one — ported from ThePatientGamerHelper, which hit
+// the same race.
+private fun NavBackStackEntry.lifecycleIsResumed() =
+    lifecycle.currentState == Lifecycle.State.RESUMED
+
+private const val NAV_ANIM_DURATION_MS = 300
+
+private val navEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+    slideInHorizontally(
+        animationSpec = tween(NAV_ANIM_DURATION_MS, easing = FastOutSlowInEasing),
+        initialOffsetX = { fullWidth -> fullWidth },
+    ) + fadeIn(animationSpec = tween(NAV_ANIM_DURATION_MS))
+}
+private val navExitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+    slideOutHorizontally(
+        animationSpec = tween(NAV_ANIM_DURATION_MS, easing = FastOutSlowInEasing),
+        targetOffsetX = { fullWidth -> -fullWidth / 4 },
+    ) + fadeOut(animationSpec = tween(NAV_ANIM_DURATION_MS))
+}
+private val navPopEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+    slideInHorizontally(
+        animationSpec = tween(NAV_ANIM_DURATION_MS, easing = FastOutSlowInEasing),
+        initialOffsetX = { fullWidth -> -fullWidth / 4 },
+    ) + fadeIn(animationSpec = tween(NAV_ANIM_DURATION_MS))
+}
+private val navPopExitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+    slideOutHorizontally(
+        animationSpec = tween(NAV_ANIM_DURATION_MS, easing = FastOutSlowInEasing),
+        targetOffsetX = { fullWidth -> fullWidth },
+    ) + fadeOut(animationSpec = tween(NAV_ANIM_DURATION_MS))
+}
+
 /**
  * A [ModalNavigationDrawer] wraps the whole [NavHost]; `drawerState` is hoisted here so every
  * drawer-reachable screen gets only an `onMenuClick` lambda, never the drawer state itself (UDF).
@@ -48,12 +95,16 @@ fun HallOfMemoriesNavGraph(navController: NavHostController = rememberNavControl
     val scope = rememberCoroutineScope()
 
     fun navigateFromDrawer(destination: Destination) {
-        navController.navigate(destination) {
-            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-            launchSingleTop = true
-            restoreState = true
+        // Guards against a drawer tap landing while the current screen is still mid transition —
+        // same race as any other forward/back tap, see lifecycleIsResumed() above.
+        if (navController.currentBackStackEntry?.lifecycleIsResumed() != false) {
+            navController.navigate(destination) {
+                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
+            scope.launch { drawerState.close() }
         }
-        scope.launch { drawerState.close() }
     }
 
     ModalNavigationDrawer(
@@ -86,12 +137,19 @@ fun HallOfMemoriesNavGraph(navController: NavHostController = rememberNavControl
     ) {
         val onMenuClick: () -> Unit = { scope.launch { drawerState.open() } }
 
-        NavHost(navController = navController, startDestination = Destination.Home) {
-            composable<Destination.Home> {
+        NavHost(
+            navController = navController,
+            startDestination = Destination.Home,
+            enterTransition = navEnterTransition,
+            exitTransition = navExitTransition,
+            popEnterTransition = navPopEnterTransition,
+            popExitTransition = navPopExitTransition,
+        ) {
+            composable<Destination.Home> { entry ->
                 HomeScreen(
                     onMenuClick = onMenuClick,
-                    onAddHack = { navController.navigate(Destination.HackForm(hackId = null)) },
-                    onHackClick = { hackId -> navController.navigate(Destination.HackDetail(hackId)) },
+                    onAddHack = { if (entry.lifecycleIsResumed()) navController.navigate(Destination.HackForm(hackId = null)) },
+                    onHackClick = { hackId -> if (entry.lifecycleIsResumed()) navController.navigate(Destination.HackDetail(hackId)) },
                 )
             }
             composable<Destination.Templates> {
@@ -100,39 +158,45 @@ fun HallOfMemoriesNavGraph(navController: NavHostController = rememberNavControl
             composable<Destination.Settings> {
                 SettingsScreen(onMenuClick = onMenuClick)
             }
-            composable<Destination.HackDetail> {
+            composable<Destination.HackDetail> { entry ->
                 HackDetailScreen(
-                    onBack = { navController.popBackStack() },
-                    onEdit = { hackId -> navController.navigate(Destination.HackForm(hackId = hackId)) },
-                    onDeleted = { navController.popBackStack() },
-                    onAddEntry = { hackId -> navController.navigate(Destination.HofForm(hackId = hackId, entryId = null)) },
-                    onEntryClick = { entryId -> navController.navigate(Destination.HofDetail(entryId)) },
+                    onBack = { if (entry.lifecycleIsResumed()) navController.popBackStack() },
+                    onEdit = { hackId -> if (entry.lifecycleIsResumed()) navController.navigate(Destination.HackForm(hackId = hackId)) },
+                    onDeleted = { if (entry.lifecycleIsResumed()) navController.popBackStack() },
+                    onAddEntry = { hackId ->
+                        if (entry.lifecycleIsResumed()) navController.navigate(Destination.HofForm(hackId = hackId, entryId = null))
+                    },
+                    onEntryClick = { entryId -> if (entry.lifecycleIsResumed()) navController.navigate(Destination.HofDetail(entryId)) },
                 )
             }
             composable<Destination.HackForm> { backStackEntry ->
                 val isCreating = backStackEntry.toRoute<Destination.HackForm>().hackId == null
                 HackFormScreen(
                     onSaved = { id ->
-                        navController.popBackStack()
-                        // Editing returns to the HackDetail already underneath in the back stack
-                        // (it re-observes the same id and refreshes on its own); creating has
-                        // nothing underneath yet, so it's pushed here.
-                        if (isCreating) navController.navigate(Destination.HackDetail(id))
+                        if (backStackEntry.lifecycleIsResumed()) {
+                            navController.popBackStack()
+                            // Editing returns to the HackDetail already underneath in the back stack
+                            // (it re-observes the same id and refreshes on its own); creating has
+                            // nothing underneath yet, so it's pushed here.
+                            if (isCreating) navController.navigate(Destination.HackDetail(id))
+                        }
                     },
-                    onCancel = { navController.popBackStack() },
+                    onCancel = { if (backStackEntry.lifecycleIsResumed()) navController.popBackStack() },
                 )
             }
-            composable<Destination.HofDetail> {
+            composable<Destination.HofDetail> { entry ->
                 HofDetailScreen(
-                    onBack = { navController.popBackStack() },
-                    onEdit = { hackId, entryId -> navController.navigate(Destination.HofForm(hackId = hackId, entryId = entryId)) },
-                    onDeleted = { navController.popBackStack() },
+                    onBack = { if (entry.lifecycleIsResumed()) navController.popBackStack() },
+                    onEdit = { hackId, entryId ->
+                        if (entry.lifecycleIsResumed()) navController.navigate(Destination.HofForm(hackId = hackId, entryId = entryId))
+                    },
+                    onDeleted = { if (entry.lifecycleIsResumed()) navController.popBackStack() },
                 )
             }
-            composable<Destination.HofForm> {
+            composable<Destination.HofForm> { entry ->
                 HofFormScreen(
-                    onSaved = { navController.popBackStack() },
-                    onCancel = { navController.popBackStack() },
+                    onSaved = { if (entry.lifecycleIsResumed()) navController.popBackStack() },
+                    onCancel = { if (entry.lifecycleIsResumed()) navController.popBackStack() },
                 )
             }
         }
