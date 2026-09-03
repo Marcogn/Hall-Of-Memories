@@ -114,3 +114,21 @@ release process".
   - Rewrote `README.md` for the shipped app (badges, a features section per
     phase, build instructions, the TheGamesDB API key note, the franchise
     disclaimer) in place of the original planning-stage placeholder.
+- **Fixed: editing a hack silently deleted its Hall of Fame entries.** A
+  Room `INSERT OR REPLACE` on the hack row cascade-deleted every entry (and
+  its slots) underneath it on every single edit, with nothing rebuilding
+  them afterward — the hack itself looked fine, so this was easy to miss.
+  Editing a hack is now a true update, never a delete-and-reinsert.
+- **Faster, safer screen transitions.** Navigating between screens is
+  quicker, and a fast double-tap during a transition can no longer land on
+  a screen that's still mid-animation.
+- **A hack's detail screen can always add another Hall of Fame entry.** The
+  add button used to disappear once a hack already had at least one entry.
+- **Hack detail shows only the logo up top**, and a hack with exactly one
+  Hall of Fame entry now shows it as a tile like any other, instead of a
+  different inline layout.
+- **One combined artwork search.** The hack form now has a single "Search
+  online" action that fetches box art and logo together, instead of two
+  separate-looking buttons doing the same thing; the search defaults to the
+  hack's own name (TheGamesDB catalogues many ROM hacks directly), and the
+  now-redundant "base game title" field is gone from the form.

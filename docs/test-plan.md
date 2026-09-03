@@ -92,9 +92,10 @@ file dialogs.
    one: box art and (if the picked game has a clear logo) logo both download
    and preview inline, with a downloading spinner visible while the request
    is in flight.
-6. Search for a ROM hack's own name that TheGamesDB has never heard of
-   (e.g. "Radical Red"). The dialog shows an explanatory "no results" state,
-   not an error — manual gallery pick stays available from the same screen.
+6. Search for an obscure, unlisted ROM hack's own name (pick one not on
+   TheGamesDB — many well-known hacks, e.g. "Radical Red", now do return a
+   direct result). The dialog shows an explanatory "no results" state, not
+   an error — manual gallery pick stays available from the same screen.
 7. Pick a logo from the gallery instead (Choose from gallery action). It
    replaces whatever was there (TheGamesDB result or none) and previews
    correctly, including that a picked logo with transparency (a PNG) still
@@ -337,7 +338,52 @@ single device session, starting from an empty database:
 
 ---
 
+## Post-launch bug-fix round
+
+Seven issues reported from real on-device use after Phases 0–6 shipped. See
+`docs/implementation-decisions.md`, "Post-launch bug-fix round, from real
+on-device use" for the root cause of each.
+
+1. **Editing a hack no longer deletes its Hall of Fame entries.** Create a
+   hack, add at least one Hall of Fame entry with a few slots filled in,
+   then go back and edit the hack (any field — name, generation, artwork,
+   notes) and save. Reopen the hack and confirm every entry and its slots
+   are still fully intact. This was silent, total data loss before the fix
+   — verify carefully, including after several edits in a row.
+2. Navigate around the app (Home → hack detail → Hall of Fame form → back,
+   drawer switches, etc.) and confirm transitions feel snappier than before.
+   Then deliberately fast-double-tap a list item or the back button during a
+   transition — confirm it never opens two screens or lands somewhere
+   unexpected; a tap during the animation should simply do nothing.
+3. Open a hack that already has at least one Hall of Fame entry. Confirm a
+   floating "+" button is visible and opens the six-slot editor for a new
+   entry — not just available on a hack with zero entries.
+4. Open a hack's detail screen. Confirm only the logo (or the generated
+   placeholder, if no logo) shows at the top — no box art image — and that
+   a hack with exactly one Hall of Fame entry shows it as a tappable tile
+   (like 2–6 entries do), not as an inline full detail view.
+5. In the hack form, confirm there is exactly one "Search online" action
+   (not one per artwork slot) and that picking a result fills in both box
+   art and logo together.
+6. In the hack form, confirm the "base game title" field is gone, and that
+   opening "Search online" pre-fills the query with the hack's own name.
+   Search for a hack TheGamesDB actually catalogues (e.g. a well-known ROM
+   hack) and confirm it's found directly, without needing the official base
+   game's name.
+7. *(Known gap, not fixed this round)* Add two hacks with the exact same
+   name. Confirm today's actual behavior: two separate, independent hack
+   records — no merge prompt, no warning. This is expected for now; only
+   verify it doesn't crash or corrupt either record.
+
 ## Known regressions
 
-*(one entry per real bug found on device: what was observed, the root cause,
-where it was fixed. Empty until the first is found.)*
+- **Editing a hack silently deleted its Hall of Fame entries.** Room's
+  `OnConflictStrategy.REPLACE` on `HackDao.upsert()` compiled to SQLite
+  `INSERT OR REPLACE`, which deletes the existing row before reinserting it
+  — on a hack, that delete cascaded (`ON DELETE CASCADE`) through every Hall
+  of Fame entry and its slots, with nothing to rebuild them afterward. Found
+  from real usage: a hack edited after its first Hall of Fame entry was
+  added came back with zero entries. Fixed in `HackDao.kt` by replacing the
+  single `REPLACE`-based `upsert()` with real `@Insert`/`@Update` methods
+  dispatched by an existence check, so editing a hack is now a true `UPDATE`
+  that never touches its children.

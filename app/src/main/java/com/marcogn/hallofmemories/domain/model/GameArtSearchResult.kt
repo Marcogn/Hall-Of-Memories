@@ -1,8 +1,8 @@
 package com.marcogn.hallofmemories.domain.model
 
 /**
- * One TheGamesDB search result — the *base commercial game*, not the ROM hack itself (spec §3.1:
- * TheGamesDB has no ROM hacks, so a hack search is framed as "find the base game's artwork").
+ * One TheGamesDB search result — usually the hack itself (TheGamesDB catalogues many well-known
+ * ROM hacks directly), occasionally the official base game when a hack isn't listed on its own.
  * [boxArtUrl] is the row-preview thumbnail; the full-resolution box art (and any logo) is fetched
  * separately, only for the result the user picks — see `GameArtSearchCoordinator.downloadArt()`.
  */

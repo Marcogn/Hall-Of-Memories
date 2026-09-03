@@ -33,9 +33,10 @@ import com.marcogn.hallofmemories.R
 import com.marcogn.hallofmemories.domain.model.GameArtSearchResult
 
 /**
- * "Search online" dialog for the hack form (spec §3.1). Search failures/empty results/missing API
- * key are all surfaced as [infoMessage] — never a crash; a gallery pick and manual entry always
- * stay available underneath, since TheGamesDB doesn't catalogue ROM hacks in the first place.
+ * "Search online" dialog for the hack form (spec §3.1) — one search fetches both box art and logo
+ * together. TheGamesDB catalogues many well-known ROM hacks directly, so the query defaults to the
+ * hack's own name; a gallery pick and manual entry always stay available for the rest. Search
+ * failures/empty results/missing API key are all surfaced as [infoMessage], never a crash.
  */
 @Composable
 fun GameArtSearchDialog(

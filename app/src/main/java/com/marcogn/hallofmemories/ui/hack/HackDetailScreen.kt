@@ -16,11 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CatchingPokemon
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -28,6 +27,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -57,7 +57,6 @@ import com.marcogn.hallofmemories.domain.model.PokemonSlot
 import com.marcogn.hallofmemories.ui.common.HackArtwork
 import com.marcogn.hallofmemories.ui.common.PokemonSprite
 import com.marcogn.hallofmemories.ui.common.displayName
-import com.marcogn.hallofmemories.ui.hof.HallOfFameContent
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -98,6 +97,13 @@ fun HackDetailScreen(
                 },
             )
         },
+        floatingActionButton = {
+            if (hack != null) {
+                FloatingActionButton(onClick = { onAddEntry(hack.id) }) {
+                    Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.hack_detail_add_hof))
+                }
+            }
+        },
     ) { padding ->
         if (uiState.isLoading || hack == null) {
             Box(modifier = Modifier.padding(padding).fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -107,9 +113,11 @@ fun HackDetailScreen(
         }
 
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+            // Logo only here — box art is already the identity shown in the library list/grid;
+            // repeating it as a second, larger image on this screen was visual noise.
             HackArtwork(
                 name = hack.name,
-                boxArtPath = hack.boxArtPath,
+                boxArtPath = null,
                 logoPath = hack.logoPath,
                 modifier = Modifier.fillMaxWidth().height(200.dp),
             )
@@ -127,16 +135,6 @@ fun HackDetailScreen(
 
             when {
                 uiState.entries.isEmpty() -> HackDetailEmptyState(onAddEntry = { onAddEntry(hack.id) })
-                uiState.entries.size == 1 -> HallOfFameContent(
-                    entryWithSlots = uiState.entries.first(),
-                    hackGeneration = hack.generation,
-                    alwaysUseLatestSprites = uiState.alwaysUseLatestSprites,
-                    onLookupMoveType = viewModel::lookupMoveType,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                        .padding(16.dp),
-                )
                 uiState.entries.size <= 6 -> HallOfFameCarousel(
                     entries = uiState.sortedEntries,
                     hackGeneration = hack.generation,

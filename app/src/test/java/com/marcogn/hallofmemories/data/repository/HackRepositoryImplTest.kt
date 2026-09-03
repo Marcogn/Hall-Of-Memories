@@ -74,44 +74,45 @@ class HackRepositoryImplTest {
         assertEquals(0, all.first().entryCount)
     }
 
+    private fun entry(id: String = "entry-1", hackId: String = "hack-1") = HallOfFameEntryEntity(
+        id = id,
+        hackId = hackId,
+        playerName = "Ash",
+        playerId = "1",
+        playtimeText = "1:00",
+        playtimeMinutes = 60,
+        screenshotPath = null,
+        insertedAt = Instant.EPOCH,
+        notes = null,
+        createdAt = Instant.EPOCH,
+        updatedAt = Instant.EPOCH,
+    )
+
+    private fun defaultSlots(entryId: String = "entry-1") = (0..5).map { index ->
+        PokemonSlotEntity(
+            id = "$entryId-slot-$index",
+            entryId = entryId,
+            slotIndex = index,
+            speciesId = null,
+            speciesName = null,
+            nickname = null,
+            gender = PokemonGender.UNKNOWN,
+            level = null,
+            nature = null,
+            ability = null,
+            isShiny = false,
+            heldItem = null,
+            ivHp = null, ivAtk = null, ivDef = null, ivSpAtk = null, ivSpDef = null, ivSpe = null,
+            evHp = null, evAtk = null, evDef = null, evSpAtk = null, evSpDef = null, evSpe = null,
+            move1 = null, move2 = null, move3 = null, move4 = null,
+            sourceTemplateId = null,
+        )
+    }
+
     @Test
     fun `observeAll reports the real entry count once entries exist`() = runTest {
         repository.upsert(hack())
-        database.hallOfFameDao().saveEntryWithSlots(
-            HallOfFameEntryEntity(
-                id = "entry-1",
-                hackId = "hack-1",
-                playerName = "Ash",
-                playerId = "1",
-                playtimeText = "1:00",
-                playtimeMinutes = 60,
-                screenshotPath = null,
-                insertedAt = Instant.EPOCH,
-                notes = null,
-                createdAt = Instant.EPOCH,
-                updatedAt = Instant.EPOCH,
-            ),
-            (0..5).map { index ->
-                PokemonSlotEntity(
-                    id = "slot-$index",
-                    entryId = "entry-1",
-                    slotIndex = index,
-                    speciesId = null,
-                    speciesName = null,
-                    nickname = null,
-                    gender = PokemonGender.UNKNOWN,
-                    level = null,
-                    nature = null,
-                    ability = null,
-                    isShiny = false,
-                    heldItem = null,
-                    ivHp = null, ivAtk = null, ivDef = null, ivSpAtk = null, ivSpDef = null, ivSpe = null,
-                    evHp = null, evAtk = null, evDef = null, evSpAtk = null, evSpDef = null, evSpe = null,
-                    move1 = null, move2 = null, move3 = null, move4 = null,
-                    sourceTemplateId = null,
-                )
-            },
-        )
+        database.hallOfFameDao().saveEntryWithSlots(entry(), defaultSlots())
 
         val all = repository.observeAll().first()
 
@@ -121,46 +122,30 @@ class HackRepositoryImplTest {
     @Test
     fun `deleteById cascades to its entries and slots`() = runTest {
         repository.upsert(hack())
-        database.hallOfFameDao().saveEntryWithSlots(
-            HallOfFameEntryEntity(
-                id = "entry-1",
-                hackId = "hack-1",
-                playerName = "Ash",
-                playerId = "1",
-                playtimeText = "1:00",
-                playtimeMinutes = 60,
-                screenshotPath = null,
-                insertedAt = Instant.EPOCH,
-                notes = null,
-                createdAt = Instant.EPOCH,
-                updatedAt = Instant.EPOCH,
-            ),
-            (0..5).map { index ->
-                PokemonSlotEntity(
-                    id = "slot-$index",
-                    entryId = "entry-1",
-                    slotIndex = index,
-                    speciesId = null,
-                    speciesName = null,
-                    nickname = null,
-                    gender = PokemonGender.UNKNOWN,
-                    level = null,
-                    nature = null,
-                    ability = null,
-                    isShiny = false,
-                    heldItem = null,
-                    ivHp = null, ivAtk = null, ivDef = null, ivSpAtk = null, ivSpDef = null, ivSpe = null,
-                    evHp = null, evAtk = null, evDef = null, evSpAtk = null, evSpDef = null, evSpe = null,
-                    move1 = null, move2 = null, move3 = null, move4 = null,
-                    sourceTemplateId = null,
-                )
-            },
-        )
+        database.hallOfFameDao().saveEntryWithSlots(entry(), defaultSlots())
 
         repository.deleteById("hack-1")
 
         assertNull(repository.observeById("hack-1").first())
         assertTrue(database.hallOfFameDao().observeByHack("hack-1").first().isEmpty())
         assertNull(database.hallOfFameDao().observeById("entry-1").first())
+    }
+
+    @Test
+    fun `editing an existing hack preserves its Hall of Fame entries and slots`() = runTest {
+        // Regression test: HackDao.upsert() used to compile to SQLite INSERT OR REPLACE, which
+        // deletes the existing row before reinserting it - cascading through
+        // hall_of_fame_entries' ON DELETE CASCADE and silently wiping every entry (and its
+        // slots) on every hack edit. upsert() must now be a real update when the row exists.
+        repository.upsert(hack())
+        database.hallOfFameDao().saveEntryWithSlots(entry(), defaultSlots())
+
+        repository.upsert(hack().copy(name = "Radical Red (edited)", notes = "now with notes"))
+
+        val editedHack = repository.observeById("hack-1").first()
+        assertEquals("Radical Red (edited)", editedHack?.name)
+        val entryWithSlots = database.hallOfFameDao().observeById("entry-1").first()
+        assertEquals("entry-1", entryWithSlots?.entry?.id)
+        assertEquals(6, entryWithSlots?.slots?.size)
     }
 }
