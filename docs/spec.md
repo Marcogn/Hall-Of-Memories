@@ -48,12 +48,19 @@ status for this plan:
 
 One addition decided while planning, confirmed with the user:
 
-- **A12 — Box art and logo are user-overridable.** TheGamesDB catalogues
-  commercial releases, not fan-made ROM hacks: a search for "Radical Red"
-  will find nothing while "Pokémon FireRed" will. Every hack can therefore
-  take its box art and logo from the gallery instead of from a search, and
-  a hack with neither renders a generated placeholder. This is the normal
-  path for hacks, not an error path.
+- **A12 — Box art and logo are user-overridable.** Every hack can take its
+  box art and logo from the gallery instead of from a search, and a hack
+  with neither renders a generated placeholder. This is the normal path for
+  hacks TheGamesDB doesn't have, not an error path.
+
+  > **Correction, from real on-device use (post-v1):** the original premise
+  > above — "TheGamesDB catalogues commercial releases, not fan-made ROM
+  > hacks: a search for 'Radical Red' will find nothing" — was wrong.
+  > TheGamesDB does catalogue many well-known ROM hacks directly, "Radical
+  > Red" included. The search now defaults to the hack's own name first (see
+  > `docs/implementation-decisions.md`, "Post-launch bug-fix round"); the
+  > gallery/placeholder fallback above still applies, just for a narrower
+  > set of hacks than originally assumed.
 
 Two things considered and explicitly rejected for v1, confirmed with the
 user — do not re-add without an explicit new request:
@@ -78,7 +85,9 @@ Hack
   id                 String (UUID) PK
   name               String
   generation         GameGeneration (enum, stored as name)
-  baseGameTitle      String?      -- the commercial game searched on TheGamesDB, if any
+  baseGameTitle      String?      -- provenance only: the TheGamesDB search result title, if
+                                     any was picked; not a user-editable field (see A12's
+                                     correction above — search defaults to the hack's own name)
   boxArtPath         String?      -- absolute path in internal storage
   boxArtUrl          String?      -- remote origin, kept for reference/re-download
   logoPath           String?
@@ -166,18 +175,29 @@ so `(entryId, slotIndex)` stays stable across every edit. `PokemonTemplate` is i
 ### 3.1 Hacks
 
 - Home is the hack list (grid of box art, list fallback), FAB `+` to create.
-- Creation form: name, generation (§3.5), optional base-game title, and an
-  optional "Search online" step against TheGamesDB that fills box art + logo.
-  Both images can instead be picked from the gallery, and both can be cleared.
-  With neither image the UI renders a deterministic placeholder derived from
-  the hack name.
-- Hack page:
+- Creation form: name, generation (§3.5), notes, and a single optional
+  "Search online" step against TheGamesDB (query defaults to the hack's own
+  name — see A12's correction above) that fills box art + logo together.
+  Both images can instead be picked from the gallery, and both can be
+  cleared. With neither image the UI renders a deterministic placeholder
+  derived from the hack name.
+- Hack page: logo header (never box art — box art stays the identity shown
+  on Home's list/grid instead), and a floating `+` that always opens the
+  six-slot editor for a new entry, regardless of how many already exist.
   - 0 entries → empty state with a prominent "Add the first Hall of Fame".
-  - exactly 1 entry → opens **straight onto that entry's detail view**, with
-    the hack logo as the header.
-  - N > 1 → logo header plus a list/carousel of entry previews. A preview's
-    thumbnail is the entry screenshot if present, otherwise the sprite of the
-    Pokémon in slot 0.
+  - N ≥ 1 → a list/carousel of entry previews, tapping one opens its detail
+    view. A preview's thumbnail is the entry screenshot if present,
+    otherwise the sprite of the Pokémon in slot 0.
+
+  > **Revision, from real on-device use (post-v1):** originally, exactly 1
+  > entry opened straight onto that entry's full detail view instead of a
+  > tile, and the header showed box art with the logo overlaid rather than
+  > the logo alone. Direct user feedback after using the app for real asked
+  > for both changed — a consistent "tap a tile to open it" interaction
+  > regardless of entry count, a `+` that's always reachable (it previously
+  > existed only on the empty state), and a logo-only header since box art
+  > was already redundant with Home's grid. See
+  > `docs/implementation-decisions.md`, "Post-launch bug-fix round".
 - Editing and deleting a hack is available from its page. Deleting a hack
   deletes its entries and slots (CASCADE) behind an explicit confirmation
   that names how many entries will be lost.
