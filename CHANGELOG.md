@@ -9,6 +9,8 @@ release process".
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-09-04
+
 - **Planning documents for the phased v1 build.** The functional
   specification, a seven-phase implementation plan, a measured PokéAPI and
   sprite reference, and the agent guide that governs how the code is written.
