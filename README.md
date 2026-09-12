@@ -158,6 +158,7 @@ com.marcogn.hallofmemories
 | [`docs/plan/reference-pokeapi.md`](docs/plan/reference-pokeapi.md) | Measured PokéAPI + sprite reference |
 | [`docs/implementation-decisions.md`](docs/implementation-decisions.md) | Why things are the way they are |
 | [`docs/test-plan.md`](docs/test-plan.md) | Manual, on-device verification |
+| [`docs/next-steps.md`](docs/next-steps.md) | Backlog of work deliberately left open |
 | [`docs/release-signing.md`](docs/release-signing.md) | Keystore, signing, and the release workflow's secrets |
 | [`CHANGELOG.md`](CHANGELOG.md) | Release notes |
 | [`CLAUDE.md`](CLAUDE.md) | Guide for AI coding agents |
