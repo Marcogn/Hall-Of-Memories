@@ -48,7 +48,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -63,6 +66,9 @@ import com.marcogn.hallofmemories.domain.model.PokedexNature
 import com.marcogn.hallofmemories.domain.model.PokedexSpecies
 import com.marcogn.hallofmemories.domain.model.PokemonGender
 import com.marcogn.hallofmemories.domain.model.PokemonTemplate
+import com.marcogn.hallofmemories.domain.showdown.ParsedShowdownSet
+import com.marcogn.hallofmemories.domain.showdown.exportSlotToShowdown
+import com.marcogn.hallofmemories.domain.showdown.parseShowdownSet
 import com.marcogn.hallofmemories.domain.validation.SlotValidation
 import com.marcogn.hallofmemories.ui.common.ComboBoxSuggestion
 import com.marcogn.hallofmemories.ui.common.EditableComboBox
@@ -139,6 +145,39 @@ private data class SlotFormFields(
 
 private fun String.toValidIntOrNull(range: IntRange): Int? = trim().toIntOrNull()?.takeIf { it in range }
 
+/** [species] is the cache row resolved from [ParsedShowdownSet.speciesName] — a slot can never
+ * hold a custom species, so the caller only reaches here once resolution has already succeeded.
+ * Ability/nature/item/move values are carried over verbatim (all free text in this app, same as
+ * every other entry path), not re-resolved against the cache. */
+private fun ParsedShowdownSet.toSlotFormFields(species: PokedexSpecies): SlotFormFields = SlotFormFields(
+    speciesId = species.id,
+    speciesName = species.displayName,
+    nickname = nickname.orEmpty(),
+    gender = gender,
+    levelText = level.toString(),
+    nature = nature.orEmpty(),
+    ability = ability.orEmpty(),
+    isShiny = isShiny,
+    heldItem = item.orEmpty(),
+    ivHpText = ivHp.toString(),
+    ivAtkText = ivAtk.toString(),
+    ivDefText = ivDef.toString(),
+    ivSpAtkText = ivSpAtk.toString(),
+    ivSpDefText = ivSpDef.toString(),
+    ivSpeText = ivSpe.toString(),
+    evHpText = evHp.toString(),
+    evAtkText = evAtk.toString(),
+    evDefText = evDef.toString(),
+    evSpAtkText = evSpAtk.toString(),
+    evSpDefText = evSpDef.toString(),
+    evSpeText = evSpe.toString(),
+    move1 = moves.getOrElse(0) { "" },
+    move2 = moves.getOrElse(1) { "" },
+    move3 = moves.getOrElse(2) { "" },
+    move4 = moves.getOrElse(3) { "" },
+    sourceTemplateId = null,
+)
+
 private fun SlotFormFields.evTotal(): Int = SlotValidation.evTotal(
     evHpText.toValidIntOrNull(SlotValidation.EV_RANGE) ?: 0,
     evAtkText.toValidIntOrNull(SlotValidation.EV_RANGE) ?: 0,
@@ -198,6 +237,7 @@ fun SlotEditorDialog(
     onSearchSpecies: suspend (String) -> List<PokedexSpecies>,
     onSearchItems: suspend (String) -> List<PokedexItem>,
     onSearchMoves: suspend (String) -> List<PokedexMove>,
+    onResolveSpecies: suspend (String) -> PokedexSpecies?,
     onDownloadPokedex: () -> Unit,
     onConfirm: (SlotDraft) -> Unit,
     onDismiss: () -> Unit,
@@ -211,8 +251,10 @@ fun SlotEditorDialog(
     var previousFieldsForUndo by remember(slotIndex) { mutableStateOf<SlotFormFields?>(null) }
     var showLoadTemplateSheet by remember(slotIndex) { mutableStateOf(false) }
     var showSaveAsTemplateDialog by remember(slotIndex) { mutableStateOf(false) }
+    var showImportShowdownDialog by remember(slotIndex) { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember(slotIndex) { SnackbarHostState() }
+    val clipboardManager = LocalClipboardManager.current
 
     var speciesQuery by remember(slotIndex) { mutableStateOf("") }
     var speciesResults by remember(slotIndex) { mutableStateOf<List<PokedexSpecies>>(emptyList()) }
@@ -227,15 +269,15 @@ fun SlotEditorDialog(
     val isEvTotalValid = SlotValidation.isEvTotalValid(evTotal)
     val canConfirm = isEvTotalValid && (mode == SlotEditorMode.SLOT || templateLabel.isNotBlank())
     val loadedFromTemplateMessage = stringResource(R.string.hof_slot_loaded_from_template)
+    val loadedFromShowdownMessage = stringResource(R.string.hof_slot_loaded_from_showdown)
     val undoLabel = stringResource(R.string.hof_slot_undo)
 
-    fun applyTemplate(template: PokemonTemplate) {
+    fun applyFieldsWithUndo(newFields: SlotFormFields, message: String) {
         previousFieldsForUndo = fields
-        fields = SlotFormFields.from(template.toSlotDraft(slotIndex))
-        showLoadTemplateSheet = false
+        fields = newFields
         scope.launch {
             val result = snackbarHostState.showSnackbar(
-                message = loadedFromTemplateMessage,
+                message = message,
                 actionLabel = undoLabel,
                 duration = SnackbarDuration.Short,
             )
@@ -243,6 +285,11 @@ fun SlotEditorDialog(
                 previousFieldsForUndo?.let { fields = it }
             }
         }
+    }
+
+    fun applyTemplate(template: PokemonTemplate) {
+        applyFieldsWithUndo(SlotFormFields.from(template.toSlotDraft(slotIndex)), loadedFromTemplateMessage)
+        showLoadTemplateSheet = false
     }
 
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -297,6 +344,21 @@ fun SlotEditorDialog(
                         TextButton(onClick = { showSaveAsTemplateDialog = true }) {
                             Text(stringResource(R.string.hof_slot_save_as_template))
                         }
+                    }
+                }
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(onClick = { showImportShowdownDialog = true }) {
+                        Text(stringResource(R.string.hof_slot_import_from_showdown))
+                    }
+                    TextButton(
+                        onClick = {
+                            val slot = fields.toSlotDraft(slotIndex).toDomain(id = "", entryId = "")
+                            exportSlotToShowdown(slot)?.let { clipboardManager.setText(AnnotatedString(it)) }
+                        },
+                        enabled = fields.speciesId != null,
+                    ) {
+                        Text(stringResource(R.string.hof_slot_copy_as_showdown))
                     }
                 }
 
@@ -464,6 +526,90 @@ fun SlotEditorDialog(
             onDismiss = { showSaveAsTemplateDialog = false },
         )
     }
+
+    if (showImportShowdownDialog) {
+        ImportShowdownDialog(
+            onResolveSpecies = onResolveSpecies,
+            onImported = { parsed, species ->
+                applyFieldsWithUndo(parsed.toSlotFormFields(species), loadedFromShowdownMessage)
+                showImportShowdownDialog = false
+            },
+            onDismiss = { showImportShowdownDialog = false },
+        )
+    }
+}
+
+/**
+ * Paste-a-set dialog: parses the text with [parseShowdownSet] (pure, no cache dependency), then
+ * resolves the species line against the PokéAPI cache via [onResolveSpecies] — the only field
+ * that must resolve, since a slot can never hold a custom species (spec's "no custom Pokémon
+ * species"). Ability/nature/item/moves are accepted as free text, same as everywhere else in
+ * this form.
+ */
+@Composable
+private fun ImportShowdownDialog(
+    onResolveSpecies: suspend (String) -> PokedexSpecies?,
+    onImported: (ParsedShowdownSet, PokedexSpecies) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var text by remember { mutableStateOf("") }
+    var isResolving by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    fun attemptImport() {
+        val parsed = parseShowdownSet(text)
+        isResolving = true
+        errorMessage = null
+        scope.launch {
+            val species = onResolveSpecies(parsed.speciesName)
+            isResolving = false
+            if (species != null) {
+                onImported(parsed, species)
+            } else {
+                errorMessage = context.getString(R.string.hof_import_showdown_species_not_found, parsed.speciesName)
+            }
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.hof_import_showdown_title)) },
+        text = {
+            Column {
+                Text(
+                    text = stringResource(R.string.hof_import_showdown_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { text = it; errorMessage = null },
+                    label = { Text(stringResource(R.string.hof_import_showdown_paste_label)) },
+                    minLines = 6,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                errorMessage?.let { message ->
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = ::attemptImport, enabled = text.isNotBlank() && !isResolving) {
+                Text(stringResource(R.string.hof_import_showdown_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

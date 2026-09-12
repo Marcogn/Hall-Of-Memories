@@ -51,6 +51,13 @@ interface PokedexDao {
     @Query("SELECT * FROM pokedex_species WHERE id = :id")
     suspend fun getSpeciesById(id: Int): PokeSpeciesEntity?
 
+    /** Exact lookup by normalized [searchName] — resolves a Pokémon Showdown set's species line
+     * to a real cache row (`domain/showdown/ShowdownFormat.kt`'s import path); a Hall of Fame
+     * slot never holds a custom species (out of scope), so an import with no match here is
+     * dropped rather than stored with a dangling name. */
+    @Query("SELECT * FROM pokedex_species WHERE searchName = :searchName LIMIT 1")
+    suspend fun getSpeciesBySearchName(searchName: String): PokeSpeciesEntity?
+
     @Query("SELECT COUNT(*) FROM pokedex_species")
     suspend fun countSpecies(): Int
 

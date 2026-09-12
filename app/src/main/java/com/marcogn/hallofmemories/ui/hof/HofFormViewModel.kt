@@ -176,6 +176,7 @@ class HofFormViewModel @Inject constructor(
     suspend fun searchSpecies(query: String): List<PokedexSpecies> = pokedexRepository.searchSpecies(query)
     suspend fun searchItems(query: String): List<PokedexItem> = pokedexRepository.searchItems(query)
     suspend fun searchMoves(query: String): List<PokedexMove> = pokedexRepository.searchMoves(query)
+    suspend fun resolveSpeciesExact(name: String): PokedexSpecies? = pokedexRepository.resolveSpeciesByName(name)
 
     /** [overwriteId] non-null overwrites that existing template's row (keeping its `createdAt`); null always creates a new one (spec's "overwrite" vs "save as a copy"). */
     fun saveAsTemplate(draft: SlotDraft, label: String, overwriteId: String?) {

@@ -54,6 +54,12 @@ class PokedexRepositoryImpl @Inject constructor(
 
     override suspend fun getSpeciesById(id: Int): PokedexSpecies? = pokedexDao.getSpeciesById(id)?.toDomain()
 
+    override suspend fun resolveSpeciesByName(name: String): PokedexSpecies? {
+        val key = searchKey(name)
+        if (key.isBlank()) return null
+        return pokedexDao.getSpeciesBySearchName(key)?.toDomain()
+    }
+
     override suspend fun searchMoves(query: String, limit: Int): List<PokedexMove> {
         val key = searchKey(query)
         if (key.isBlank()) return emptyList()

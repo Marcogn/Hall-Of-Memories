@@ -140,6 +140,7 @@ fun TemplatesScreen(onMenuClick: () -> Unit, modifier: Modifier = Modifier, view
             onSearchSpecies = viewModel::searchSpecies,
             onSearchItems = viewModel::searchItems,
             onSearchMoves = viewModel::searchMoves,
+            onResolveSpecies = viewModel::resolveSpeciesExact,
             onDownloadPokedex = viewModel::retryPokedexSync,
             onConfirm = { draft ->
                 viewModel.saveTemplate(id = target.id, label = label, draft = draft, createdAt = target.createdAt)

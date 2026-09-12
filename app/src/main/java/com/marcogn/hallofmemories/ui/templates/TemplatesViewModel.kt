@@ -70,6 +70,7 @@ class TemplatesViewModel @Inject constructor(
     suspend fun searchSpecies(query: String): List<PokedexSpecies> = pokedexRepository.searchSpecies(query)
     suspend fun searchItems(query: String): List<PokedexItem> = pokedexRepository.searchItems(query)
     suspend fun searchMoves(query: String): List<PokedexMove> = pokedexRepository.searchMoves(query)
+    suspend fun resolveSpeciesExact(name: String): PokedexSpecies? = pokedexRepository.resolveSpeciesByName(name)
 
     /** [id]/[createdAt] null creates a new template; both non-null overwrites the existing one in place. */
     fun saveTemplate(id: String?, label: String, draft: SlotDraft, createdAt: Instant?) {

@@ -241,6 +241,20 @@ name; empty slots are legal and render as "empty".
 - "Save as reusable template" writes a `PokemonTemplate` from the current slot.
 - "Load from template" fills the slot from any existing template, from any
   hack, and records `sourceTemplateId`.
+- "Import from Showdown" parses a pasted Pokémon Showdown set (its own plain
+  export/import text format — species, nickname, gender, item, ability,
+  level, shiny, nature, EVs, IVs, up to four moves) and fills the slot from
+  it, same field-by-field replacement as "Load from template." Only the
+  species has to resolve against the PokéAPI cache (a slot can never hold a
+  custom species, §8); every other field is accepted as free text, same as
+  typing it in by hand. Fields this app has no equivalent for (Tera Type,
+  Happiness, Pokéball, Hidden Power type, Dynamax Level, Gigantamax) are
+  recognized well enough not to be mistaken for the species line, then
+  dropped. See `docs/implementation-decisions.md`, "Showdown format
+  import/export", for the exact grammar and why it exists — CoverDex (the
+  sibling app) already round-trips a team through this same text format,
+  and a Hall of Fame slot already models nearly every field a Showdown set
+  has.
 
 ### 3.4 Validation
 

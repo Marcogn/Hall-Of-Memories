@@ -208,6 +208,7 @@ fun HofFormScreen(
             onSearchSpecies = viewModel::searchSpecies,
             onSearchItems = viewModel::searchItems,
             onSearchMoves = viewModel::searchMoves,
+            onResolveSpecies = viewModel::resolveSpeciesExact,
             onDownloadPokedex = viewModel::retryPokedexSync,
             onConfirm = { updated ->
                 viewModel.onSlotConfirmed(index, updated)
