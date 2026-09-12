@@ -9,6 +9,16 @@ release process".
 
 ## [Unreleased]
 
+- **A Hall of Fame or template slot can now be filled from a pasted Pokémon
+  Showdown set.** "Import from Showdown" in the slot editor parses the real
+  client's own plain-text set format (species, nickname, gender, item,
+  ability, level, shiny, nature, EVs, IVs, up to four moves — verified
+  against `sim/teams.ts` in smogon/pokemon-showdown, not assumed) and fills
+  the slot the same way "Load from template" does. Only the species has to
+  match the PokéAPI cache (this app has no custom-species concept); every
+  other field is accepted as free text. "Copy as Showdown" does the
+  reverse, copying the current slot to the clipboard in the same format.
+
 ## [1.0.0] - 2026-09-04
 
 - **Planning documents for the phased v1 build.** The functional

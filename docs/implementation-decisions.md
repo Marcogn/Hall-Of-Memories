@@ -474,3 +474,51 @@ compile against locally (see `CLAUDE.md`, "Build/test commands"), so it
 first surfaced as an `Android CI` failure on the pushed PR. Confirmed by
 reading that failure's actual compiler output before fixing it, rather than
 guessing.
+
+## Showdown format import/export (post-v1, explicit request)
+
+Genuinely new scope, not in `docs/spec.md` at the time it was requested — the
+user explicitly asked for it in the same session that also fixed a real
+Showdown-import bug in the sibling CoverDex app, wanting the two apps'
+handling of Showdown data to be consistent with each other. `docs/spec.md`
+§3.3 and §8 were updated to reflect it as accepted scope, not deferred.
+
+- **Only the species has to resolve against the PokéAPI cache; every other
+  field is free text, unresolved.** A Hall of Fame slot's nature/ability/
+  item/move fields are already free-text "typing aids, never a dependency"
+  (`CLAUDE.md`, "Product decisions already made") — the manual editor never
+  required them to match a cache row, so the importer doesn't either.
+  Species is the one exception: `PokemonSlot.speciesId` drives the sprite
+  and there is deliberately no custom-species concept in this app (§8), so
+  an unresolved species is dropped with an inline error rather than stored
+  with a dangling name and no id.
+- **The parser was built with per-line-position species detection from the
+  start**, not the "any unrecognized line is a fresh species line" pattern
+  that turned out to be a real bug in CoverDex's own parser (see that
+  repo's `docs/implementation-decisions.md`, "Showdown format
+  compatibility", found in the same review that led to this feature).
+  `parseShowdownSet` only ever treats a block's first line as the species/
+  item/gender/nickname line; every other unrecognized line (including the
+  six fields this app has no model for — Tera Type, Happiness, Pokéball,
+  Hidden Power type, Dynamax Level, Gigantamax) is ignored, never
+  overwriting anything already parsed.
+- **An absent `Level:` line resolves to level 100, not `null`.** Real
+  Showdown's own grammar treats an omitted level as a genuine "level 100
+  Pokémon," not "level unknown" — mapping it to `null` would silently
+  understate what the set actually represents. Same reasoning for absent
+  `EVs:`/`IVs:` lines: they resolve to explicit 0/31 per stat (Showdown's
+  own defaults), not `null`.
+- **`exportSlotToShowdown` is a genuine, tested round-trip companion to the
+  importer, not speculative surface.** It backs "Copy as Showdown" in
+  `SlotEditorDialog` (clipboard only, no dialog/preview — there's a single
+  current slot to export, not a multi-Pokémon team like CoverDex's own
+  export screen) and the parser's own round-trip test. Matches real
+  Showdown's `exportSet` grammar exactly: a field's line is omitted
+  entirely at its default (level 100, EV 0, IV 31, no nature/ability/item/
+  shiny/nickname), never written blank.
+- **Verified against the authoritative source, not assumed.** Every line
+  shape (species/nickname/gender/item order, `Ability:`/`Trait:`, `EVs:`/
+  `IVs:` stat aliases, the nature line's exact regex, Hidden Power's
+  bracket un-wrapping) was checked against `sim/teams.ts`'s `exportSet`/
+  `parseExportedTeamLine` in the real `smogon/pokemon-showdown` repository,
+  not written from memory of what a Showdown set "usually looks like."

@@ -234,4 +234,14 @@
     <string name="hof_template_label_collision">A template named \"%1$s\" already exists.</string>
     <string name="hof_template_overwrite">Overwrite</string>
     <string name="hof_template_save_as_copy">Save as a copy</string>
+
+    <!-- Hall of Fame: Pokémon Showdown import -->
+    <string name="hof_slot_import_from_showdown">Import from Showdown</string>
+    <string name="hof_slot_copy_as_showdown">Copy as Showdown</string>
+    <string name="hof_slot_loaded_from_showdown">Imported from Showdown</string>
+    <string name="hof_import_showdown_title">Import a Showdown set</string>
+    <string name="hof_import_showdown_hint">Paste a set in Pokémon Showdown\'s own export format. Only the species has to match a cache entry — every other field imports as free text.</string>
+    <string name="hof_import_showdown_paste_label">Set text</string>
+    <string name="hof_import_showdown_confirm">Import</string>
+    <string name="hof_import_showdown_species_not_found">Species \"%1$s\" not found in the Pokédex. Check the spelling or sync the Pokédex.</string>
 </resources>

@@ -105,6 +105,8 @@ com.marcogn.hallofmemories
 │   ├── sprite/       SpriteVariant + SpriteUrlResolver (pure, unit-tested)
 │   ├── filter/       pure filter/sort functions
 │   ├── validation/   pure slot validation
+│   ├── showdown/     Pokémon Showdown set text: parse + export, verified against
+│   │                 the real client's own grammar (sim/teams.ts)
 │   ├── backup/       BackupPayload DTOs + mapping
 │   └── repository/   repository interfaces
 ├── di/               Hilt modules (Database, Repository, Coroutines)

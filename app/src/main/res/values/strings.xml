@@ -234,4 +234,14 @@
     <string name="hof_template_label_collision">Esiste già un modello chiamato \"%1$s\".</string>
     <string name="hof_template_overwrite">Sovrascrivi</string>
     <string name="hof_template_save_as_copy">Salva come copia</string>
+
+    <!-- Hall of Fame: importazione da Pokémon Showdown -->
+    <string name="hof_slot_import_from_showdown">Importa da Showdown</string>
+    <string name="hof_slot_copy_as_showdown">Copia come Showdown</string>
+    <string name="hof_slot_loaded_from_showdown">Importato da Showdown</string>
+    <string name="hof_import_showdown_title">Importa un set di Showdown</string>
+    <string name="hof_import_showdown_hint">Incolla un set nel formato di esportazione di Pokémon Showdown. Solo la specie deve corrispondere a una voce nella cache: gli altri campi vengono importati come testo libero.</string>
+    <string name="hof_import_showdown_paste_label">Testo del set</string>
+    <string name="hof_import_showdown_confirm">Importa</string>
+    <string name="hof_import_showdown_species_not_found">Specie \"%1$s\" non trovata nel Pokédex. Controlla l\'ortografia o sincronizza il Pokédex.</string>
 </resources>

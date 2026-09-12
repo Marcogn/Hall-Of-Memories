@@ -25,6 +25,11 @@ interface PokedexRepository {
 
     suspend fun searchSpecies(query: String, limit: Int = DEFAULT_SEARCH_LIMIT): List<PokedexSpecies>
     suspend fun getSpeciesById(id: Int): PokedexSpecies?
+
+    /** Exact-name lookup (normalized the same way as [searchSpecies]'s own key), `null` if the
+     * cache is empty or has no such species — used to resolve a pasted Pokémon Showdown set's
+     * species line, since a slot can never hold a custom species. */
+    suspend fun resolveSpeciesByName(name: String): PokedexSpecies?
     suspend fun searchMoves(query: String, limit: Int = DEFAULT_SEARCH_LIMIT): List<PokedexMove>
 
     /** Exact-name lookup, `null` if the cache is empty or has no such move — used only to colour a saved slot's move chip, never to alter what's shown (spec's "typing aid, never a dependency"). */

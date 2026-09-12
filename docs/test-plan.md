@@ -403,6 +403,40 @@ multi-select" for the root cause of the two bugs below.
    confirm it exits selection mode (deselecting everything) rather than
    leaving the Home screen.
 
+## Post-v1 — Pokémon Showdown import
+
+1. In a slot editor (Hall of Fame or Templates), tap "Import from Showdown"
+   and paste a real Pokémon Showdown export copied from the actual site's
+   team builder or a Smogon sample-team page — species, item, ability,
+   `Level:`, `Shiny: Yes`, EVs, nature, IVs and four moves all present.
+   Confirm every field lands in the form exactly as pasted, and that the
+   species sprite renders (species resolution succeeded).
+2. Paste a set with a nickname and a gender marker, e.g.
+   `Volt Turtle (Pikachu) (F) @ Light Ball`. Confirm the nickname field gets
+   "Volt Turtle", the species is "Pikachu" (sprite renders), and the gender
+   picker lands on ♀.
+3. Paste a real Gen 9 set that includes a `Tera Type:` line (very common in
+   any current Showdown export) alongside `Level:`. Confirm the species is
+   *not* corrupted to the Tera Type or Level text — this was the exact bug
+   found and fixed in CoverDex's own importer; this app's parser was built
+   correctly from the start, but verify it by hand anyway.
+4. Paste a set naming a species that doesn't exist in the synced cache (a
+   typo, or a species from a generation the cache predates). Confirm an
+   inline error names the species and nothing in the form changes.
+5. Tap Import, then immediately tap "Undo" on the resulting snackbar and
+   confirm every field reverts to what it had before (including an
+   originally-empty slot).
+6. Open a Hall of Fame entry with a fully filled slot (species, nickname,
+   gender, item, ability, level, shiny, nature, EVs, IVs, four moves) and
+   tap "Copy as Showdown". Paste the clipboard contents into a text editor
+   and confirm it matches Pokémon Showdown's own export shape (no blank
+   placeholder lines, nickname/gender/item on the first line, EVs/IVs/nature
+   lines only where the slot actually has non-default values). Paste that
+   same text back in via "Import from Showdown" on an empty slot and
+   confirm every field round-trips exactly.
+7. With no species chosen, confirm "Copy as Showdown" is disabled (nothing
+   to export from an empty slot).
+
 ## Known regressions
 
 - **Editing a hack silently deleted its Hall of Fame entries.** Room's
