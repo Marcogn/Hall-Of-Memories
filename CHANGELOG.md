@@ -9,6 +9,8 @@ release process".
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-12
+
 - **A Hall of Fame or template slot can now be filled from a pasted Pokémon
   Showdown set.** "Import from Showdown" in the slot editor parses the real
   client's own plain-text set format (species, nickname, gender, item,
