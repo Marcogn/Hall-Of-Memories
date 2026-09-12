@@ -131,6 +131,10 @@ com.marcogn.hallofmemories
 │   ├── sprite/       SpriteVariant + SpriteUrlResolver (pure, unit-tested)
 │   ├── filter/       pure filter/sort functions
 │   ├── validation/   pure slot validation
+│   ├── showdown/     Pokémon Showdown set text: parse + export, verified against
+│   │                 the real client's own grammar (sim/teams.ts)
+│   ├── thegamesdb/   pure parsers over TheGamesDB's JSON responses (lookup
+│   │                 tables, search results), no Android or network import
 │   ├── backup/       BackupPayload DTOs + mapping
 │   └── repository/   repository interfaces
 ├── di/               Hilt modules (Database, Repository, Coroutines)

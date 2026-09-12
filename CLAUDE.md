@@ -52,7 +52,9 @@ PokéAPI at runtime and are never bundled as assets.
 - **Phase 4 — Reusable Pokémon templates**: ✅ done
 - **Phase 5 — Presentation polish + local backup**: ✅ done
 - **Phase 6 — Signing, release pipeline, docs**: ✅ done
-- **v2 (separate spec)** — Google Drive backup, deliberately out of v1.
+- **v2** — Google Drive backup, deliberately out of v1. Currently described
+  only as a section inside `docs/spec.md` ("v2 (out of scope, spec to be
+  written separately)"), not yet its own document.
 
 Tick these off as phases land. Do not implement anything not present in
 `docs/spec.md` or a phase plan unless a new session explicitly asks for it.
@@ -107,6 +109,8 @@ com.marcogn.hallofmemories
 │   ├── validation/   pure slot validation
 │   ├── showdown/     Pokémon Showdown set text: parse + export, verified against
 │   │                 the real client's own grammar (sim/teams.ts)
+│   ├── thegamesdb/   pure parsers over TheGamesDB's JSON responses (lookup
+│   │                 tables, search results), no Android or network import
 │   ├── backup/       BackupPayload DTOs + mapping
 │   └── repository/   repository interfaces
 ├── di/               Hilt modules (Database, Repository, Coroutines)
@@ -253,8 +257,14 @@ bumps the version, builds, signs, publishes, and only then pushes the bump to
 
 ## What NOT to do until explicitly requested
 
-Google Drive backup (v2, separate spec — v1 ships only the disabled Settings
-row and the repository seam). Any account or multi-user concept. Custom
+Google Drive backup (v2 — currently only a section inside `docs/spec.md`,
+not yet a separate document; v1 ships only the disabled Settings row and the
+repository seam). Any account or multi-user concept. Custom
 Pokémon species. Legality validation. Battle or type-coverage analysis — that
-is CoverDex's job. A statistics screen. A secret trainer ID field (rejected).
+is CoverDex's job. A secret trainer ID field (rejected).
 Exporting a Hall of Fame as an image or PDF ("trainer card", rejected).
+
+A statistics screen was excluded here until 2026-09-12, when the decision
+was explicitly revisited and reversed — see `docs/next-steps.md` for the
+proposed scope (species/generation distribution across saved Halls of
+Fame, shiny rate, etc.), modeled on ThePatientGamerHelper's Phase 3.
