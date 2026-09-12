@@ -13,6 +13,8 @@ editing anything, then read the phase plan you are executing.
   non-obvious choices and why they were made. Add to it as you go.
 - [`docs/test-plan.md`](docs/test-plan.md) — manual, on-device verification.
   One new section per phase; one "Known regressions" entry per real bug found.
+- [`docs/next-steps.md`](docs/next-steps.md) — a concise backlog of work
+  deliberately left open, each entry cited against where it's documented.
 
 ## What this project is
 
