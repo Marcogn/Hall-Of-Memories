@@ -38,6 +38,26 @@ display name (e.g. a hack and an unrelated remake).
 `README.md`, "Screenshots" section currently reads: *"(coming soon — the
 app has no published screenshots yet.)"* — still true as of this writing.
 
+## Proposed improvements (approved by the user, 2026-09-12)
+
+Not yet planned in any phase document — these are new proposals raised
+during a cross-repo audit and approved for the backlog, not gaps found in
+existing docs. Each still needs its own design pass before implementation.
+
+- **Statistics screen.** Modeled on ThePatientGamerHelper's Phase 3
+  (`domain/stats/LibraryStatisticsCalculator.kt`,
+  `ui/stats/StatsScreen.kt`): species/generation distribution across saved
+  Halls of Fame, shiny rate, maybe average level or completion counts by
+  hack. This reverses a prior decision — `CLAUDE.md`'s "What NOT to do
+  until explicitly requested" listed "A statistics screen" as excluded
+  until this was explicitly revisited and reversed on 2026-09-12 (see
+  `CLAUDE.md`'s note in that section).
+- **"Favorite" flag on Hall of Fame entries.** A boolean field to filter/
+  sort by, useful once the library grows past a handful of entries.
+  Would need a Room migration (additive column, default `false`) and a
+  filter/sort option alongside the existing ones in
+  `domain/filter/`.
+
 ## Pokémon Showdown import/export — ship it in a release
 
 `CHANGELOG.md`'s `[Unreleased]` section currently holds exactly one entry:

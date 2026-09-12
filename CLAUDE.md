@@ -261,5 +261,10 @@ Google Drive backup (v2 — currently only a section inside `docs/spec.md`,
 not yet a separate document; v1 ships only the disabled Settings row and the
 repository seam). Any account or multi-user concept. Custom
 Pokémon species. Legality validation. Battle or type-coverage analysis — that
-is CoverDex's job. A statistics screen. A secret trainer ID field (rejected).
+is CoverDex's job. A secret trainer ID field (rejected).
 Exporting a Hall of Fame as an image or PDF ("trainer card", rejected).
+
+A statistics screen was excluded here until 2026-09-12, when the decision
+was explicitly revisited and reversed — see `docs/next-steps.md` for the
+proposed scope (species/generation distribution across saved Halls of
+Fame, shiny rate, etc.), modeled on ThePatientGamerHelper's Phase 3.
