@@ -295,12 +295,17 @@ file dialogs.
    completely untouched — no partial changelog rewrite, no version bump —
    so the same version number can be retried after fixing the secret.
 
-*(Steps 1–5 need real GitHub secrets and repository write access, so they
-were not run end-to-end in this app's own development session — the
-workflows were written by porting ThePatientGamerHelper's already-working
-`build-apk.yml`/`release.yml` and are believed correct by inspection, but
-are unverified until run for real. Flag this in the PR/release notes until
-someone with the secrets configured runs steps 1–5 for the first time.)*
+*(Steps 1–5 need real GitHub secrets and repository write access. They were
+initially written up unverified — the workflows were ported from
+ThePatientGamerHelper's already-working `build-apk.yml`/`release.yml` and
+were only believed correct by inspection. That has since been verified for
+real: `Release` was run for v1.0.0 (2026-09-04), publishing
+[the GitHub Release](https://github.com/marcogn/hall-of-memories/releases/tag/v1.0.0)
+and only then pushing the `github-actions[bot]` "Cut release 1.0.0" commit
+to `main`, exactly as steps 1–3 describe. Steps 4–5 — re-running `Release`
+against an already-published version, and a forced build/sign failure —
+have not themselves been exercised yet; re-check those two specifically
+before relying on them.)*
 
 ### Final full-app regression pass (Phases 0–6)
 
