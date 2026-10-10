@@ -73,6 +73,7 @@ starting point for registering this app with any Google API that checks a
 signing certificate (none are used in v1, but any future integration —
 e.g. if Google Drive backup ever needs `AuthorizationClient`-style
 authorization — would need this exact value). `build-apk.yml` and
-`release.yml` both print it after every signed build via the same
-`signingReport` task, run against the decoded release keystore rather than
-the default debug one.
+`release.yml` (the kit's, `docs/ci.md`) print the certificate's SHA-256
+after every signed build via `apksigner`, not the SHA-1: run the command
+above, or `keytool -list -v -keystore <file>`, against the release keystore
+when the SHA-1 is needed.

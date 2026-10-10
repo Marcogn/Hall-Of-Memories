@@ -225,13 +225,23 @@ Carried over from the sibling projects; each one cost real debugging time.
 ./gradlew testDebugUnitTest        # JVM unit tests (domain + Robolectric)
 ./gradlew lint                     # Android Lint
 ./gradlew connectedDebugAndroidTest  # instrumented tests (needs a device)
+./gradlew testDebugUnitTest createDebugUnitTestCoverageReport -Pcoverage  # JaCoCo report in app/build/reports/coverage/test/debug/
 ```
 
 Real verification happens in `.github/workflows/android-ci.yml` on every
-push/PR. A sandboxed session may have the Maven repositories reachable but no
-Android SDK — check `$ANDROID_HOME` and `command -v sdkmanager` before
-assuming a local build is possible, and fall back to CI rather than fighting
-it. Never report a build as passing that you did not run.
+push/PR. In a cloud session the SessionStart hook
+(`.claude/hooks/android-sdk.sh`) installs the Android SDK and writes
+`local.properties`; if the build still can't run, fall back to CI rather than
+fighting it. Never report a build as passing that you did not run.
+
+Claude Code tooling: `.claude/` holds the kit's skills (`verify`, `new-plan`,
+`next-phase`, `close-phase`, `steward`), the `architecture-reviewer` agent and
+the Android SDK hook, from
+[claude-skill-android-kit](https://github.com/Marcogn/claude-skill-android-kit)
+(`docs/claude.md`); `.github/workflows/` holds short callers of the kit's
+reusable workflows (`docs/ci.md`). `REVIEW.md` is what every review checks.
+Bugs and ideas found outside the current task become GitHub issues (bug/task
+templates, `docs/claude.md`, "Issues"), not notes in this file.
 
 Testing approach: pure JVM unit tests for `domain/` (parsers, sprite
 resolution, filters, validation, mappers, backup DTOs); Robolectric as JVM

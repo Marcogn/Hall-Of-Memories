@@ -162,6 +162,8 @@ com.marcogn.hallofmemories
 | [`docs/release-signing.md`](docs/release-signing.md) | Keystore, signing, and the release workflow's secrets |
 | [`CHANGELOG.md`](CHANGELOG.md) | Release notes |
 | [`CLAUDE.md`](CLAUDE.md) | Guide for AI coding agents |
+| [`docs/claude.md`](docs/claude.md) | Claude Code setup (the shared Android kit) |
+| [`docs/ci.md`](docs/ci.md) | CI, Build APK, Release: workflows and secrets |
 
 ## Demo data
 
