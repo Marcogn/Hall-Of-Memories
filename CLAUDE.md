@@ -54,6 +54,9 @@ PokéAPI at runtime and are never bundled as assets.
 - **Phase 4 — Reusable Pokémon templates**: ✅ done
 - **Phase 5 — Presentation polish + local backup**: ✅ done
 - **Phase 6 — Signing, release pipeline, docs**: ✅ done
+- **Phase 7 — In-app updates and Info screen**: 📋 planned (Sonnet), see
+  [`docs/plan/phase-7-updates-and-about.md`](docs/plan/phase-7-updates-and-about.md);
+  starts after ThePatientGamerHelper Phase 9 (the pilot) is merged
 - **v2** — Google Drive backup, deliberately out of v1. Currently described
   only as a section inside `docs/spec.md` ("v2 (out of scope, spec to be
   written separately)"), not yet its own document.
