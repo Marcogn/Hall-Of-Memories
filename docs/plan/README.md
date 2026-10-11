@@ -16,6 +16,7 @@ says so explicitly and tells you what to do about it.
 | 4 | [`phase-4-templates.md`](phase-4-templates.md) | Reusable Pokémon templates, cross-hack |
 | 5 | [`phase-5-polish-and-backup.md`](phase-5-polish-and-backup.md) | Multi-entry previews, screenshots, local zip backup, Drive placeholder |
 | 6 | [`phase-6-release.md`](phase-6-release.md) | Keystore, release pipeline, README, CHANGELOG |
+| 7 | [`phase-7-updates-and-about.md`](phase-7-updates-and-about.md) | Planned: in-app updates from GitHub Releases (port of ThePatientGamerHelper Phase 9), Info screen with version and disclaimers |
 
 Read before starting any phase: [`../../CLAUDE.md`](../../CLAUDE.md),
 [`../spec.md`](../spec.md), this file, the phase file itself, and

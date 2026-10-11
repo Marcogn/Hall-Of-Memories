@@ -549,3 +549,20 @@ at `@v1`).
   the release title `Hall-Of-Memories vx.y.z` (the repository's name), not
   `HallOfMemories-x.y.z.apk`/`Hall of Memories vx.y.z`. Accepted: nothing
   downloads the asset by name; past releases keep their old names.
+
+## In-app updates and Info screen, planned (2026-10-11)
+
+Planned in `docs/plan/phase-7-updates-and-about.md` (the author's request for all six apps):
+
+- **A port of ThePatientGamerHelper Phase 9**, not a design of its own and not a shared library:
+  that app is the pilot (Opus core there), this phase copies its `update` package (Sonnet).
+- **Updates from this repository's GitHub Releases** (`releases/latest`, no token, public repository),
+  checked **at startup only**: frequency Never / Every start / Daily / Weekly, default Weekly; "Check
+  now" in Info; debug builds never check automatically. "Not now" only closes the dialog.
+- **The APK is the release's `.apk` asset, whatever its name**, verified by SHA-256 `digest`, package
+  name, higher `versionCode` and signing certificate, installed through `PackageInstaller` with the
+  system confirmation.
+- **No new dependency and no WorkManager** (plan rule 3): platform APIs only, settings in the existing
+  DataStore.
+- **The dialog shows the Release body** (CHANGELOG headlines) plus a "Full changelog" link.
+
