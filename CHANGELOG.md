@@ -9,6 +9,8 @@ release process".
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-12
+
 - **In-app updates from GitHub Releases.** The app checks this repository's
   latest release, shows what is new, downloads the APK, verifies it (SHA-256
   digest, package name, higher version code, same signing certificate) and

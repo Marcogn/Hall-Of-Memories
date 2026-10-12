@@ -15,8 +15,8 @@ android {
         applicationId = "com.marcogn.hallofmemories"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.1.0"
+        versionCode = 4
+        versionName = "1.1.1"
 
         // Phase 7 - in-app updates: the GitHub repository whose latest release is this app's update
         // source (data/update/GitHubReleaseClient).
