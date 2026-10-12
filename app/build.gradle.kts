@@ -18,6 +18,11 @@ android {
         versionCode = 3
         versionName = "1.1.0"
 
+        // Phase 7 - in-app updates: the GitHub repository whose latest release is this app's update
+        // source (data/update/GitHubReleaseClient).
+        buildConfigField("String", "UPDATE_GITHUB_OWNER", "\"Marcogn\"")
+        buildConfigField("String", "UPDATE_GITHUB_REPO", "\"Hall-Of-Memories\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

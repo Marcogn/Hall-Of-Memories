@@ -31,7 +31,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.marcogn.hallofmemories.R
 import com.marcogn.hallofmemories.domain.model.ThemeMode
 import com.marcogn.hallofmemories.ui.common.HallOfMemoriesTopBar
+import com.marcogn.hallofmemories.ui.common.displayName
+import com.marcogn.hallofmemories.domain.update.UpdateFrequency
 import com.marcogn.hallofmemories.ui.theme.ThemeViewModel
+import com.marcogn.hallofmemories.ui.update.UpdateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,6 +81,7 @@ fun SettingsScreen(
                     applyAppLanguage(it)
                 }
             }
+            UpdatesSection()
             SpritesSection(
                 alwaysUseLatestSprites = uiState.alwaysUseLatestSprites,
                 onAlwaysUseLatestSpritesChange = settingsViewModel::setAlwaysUseLatestSprites,
@@ -96,6 +100,20 @@ fun SettingsScreen(
                 isBusy = uiState.isBackupBusy,
                 onExport = settingsViewModel::exportBackup,
                 onImport = settingsViewModel::importBackup,
+            )
+        }
+    }
+}
+
+@Composable
+private fun UpdatesSection(viewModel: UpdateViewModel = hiltViewModel()) {
+    val frequency by viewModel.frequency.collectAsState()
+    SettingsSection(title = stringResource(R.string.settings_updates_section_title)) {
+        UpdateFrequency.entries.forEach { option ->
+            RadioRow(
+                label = option.displayName(),
+                selected = frequency == option,
+                onClick = { viewModel.onFrequencySelected(option) },
             )
         }
     }

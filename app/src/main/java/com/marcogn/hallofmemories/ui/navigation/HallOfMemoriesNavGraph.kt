@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CatchingPokemon
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +37,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.marcogn.hallofmemories.R
+import com.marcogn.hallofmemories.ui.about.AboutScreen
 import com.marcogn.hallofmemories.ui.hack.HackDetailScreen
 import com.marcogn.hallofmemories.ui.hack.HackFormScreen
 import com.marcogn.hallofmemories.ui.hof.HofDetailScreen
@@ -132,6 +134,13 @@ fun HallOfMemoriesNavGraph(navController: NavHostController = rememberNavControl
                     onClick = { navigateFromDrawer(Destination.Settings) },
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                 )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Info, contentDescription = null) },
+                    label = { Text(stringResource(R.string.drawer_about)) },
+                    selected = false,
+                    onClick = { navigateFromDrawer(Destination.About) },
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                )
             }
         },
     ) {
@@ -158,6 +167,9 @@ fun HallOfMemoriesNavGraph(navController: NavHostController = rememberNavControl
             }
             composable<Destination.Settings> {
                 SettingsScreen(onMenuClick = onMenuClick)
+            }
+            composable<Destination.About> {
+                AboutScreen(onMenuClick = onMenuClick)
             }
             composable<Destination.HackDetail> { entry ->
                 HackDetailScreen(

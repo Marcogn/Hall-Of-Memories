@@ -66,6 +66,22 @@ planned v2 feature; v1 ships only a disabled placeholder for it in Settings.
 
 *(coming soon — the app has no published screenshots yet.)*
 
+### Updates
+
+On a release build the app checks this repository's latest GitHub Release at
+startup, at the frequency chosen in Settings → Updates (Never, every start,
+daily, weekly; weekly by default), and offers to download and install a newer
+version. The APK is verified (SHA-256 digest, package name, higher version
+code, same signing certificate) and handed to the system installer, which
+always asks for confirmation. Nothing is installed silently and nothing runs
+in the background. Debug builds never check on their own.
+
+### Info
+
+The drawer's Info entry ("About" in English) shows the installed version, a "Check for updates"
+button (it works with the frequency set to Never), the GitHub link, the
+licence and the legal notes.
+
 ## Download
 
 Grab the latest signed APK from the

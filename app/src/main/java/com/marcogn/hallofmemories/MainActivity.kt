@@ -12,11 +12,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.marcogn.hallofmemories.data.update.UpdateManager
 import com.marcogn.hallofmemories.domain.model.ThemeMode
 import com.marcogn.hallofmemories.ui.navigation.HallOfMemoriesNavGraph
 import com.marcogn.hallofmemories.ui.theme.HallOfMemoriesTheme
 import com.marcogn.hallofmemories.ui.theme.ThemeViewModel
+import com.marcogn.hallofmemories.ui.update.UpdateDialogHost
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * `AppCompatActivity`, not `ComponentActivity`: `AppCompatDelegate.setApplicationLocales()`
@@ -26,9 +29,19 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject lateinit var updateManager: UpdateManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // Phase 7: startup update check, at most once per process (UpdateManager guards it, so an
+        // activity recreation - rotation, language change - doesn't check again). Never in debug
+        // builds: they are signed with the debug key, so a release APK could not install over them;
+        // "Check now" stays available there to try the flow.
+        if (!BuildConfig.DEBUG) {
+            updateManager.checkIfDue()
+        }
         setContent {
             HallOfMemoriesApp()
         }
@@ -46,6 +59,7 @@ private fun HallOfMemoriesApp(themeViewModel: ThemeViewModel = hiltViewModel()) 
     HallOfMemoriesTheme(darkTheme = darkTheme) {
         Surface(modifier = Modifier.fillMaxSize()) {
             HallOfMemoriesNavGraph()
+            UpdateDialogHost()
         }
     }
 }
