@@ -9,6 +9,23 @@ release process".
 
 ## [Unreleased]
 
+- **In-app updates from GitHub Releases.** The app checks this repository's
+  latest release, shows what is new, downloads the APK, verifies it (SHA-256
+  digest, package name, higher version code, same signing certificate) and
+  hands it to the system installer, always with the user's confirmation.
+  - Update dialog with the release headlines, a "Full changelog" link,
+    Download / Not now, a progress dialog with Cancel, and a plain-language
+    reason when something fails.
+  - New "Updates" setting: Never / Every start / Daily / Weekly (default
+    Weekly). Release builds check at startup when due; debug builds never
+    check automatically.
+  - New permission: "install unknown apps" (`REQUEST_INSTALL_PACKAGES`),
+    asked for by the system only when installing an update.
+- **New Info screen.** In the drawer under Settings (English: "About"):
+  installed version, "Check for updates" (works with frequency Never too),
+  "Made with ❤️ from Marcogn", GitHub link, MIT licence and the legal notes
+  (unofficial fan-made app, trademarks, PokéAPI, TheGamesDB, ROM hacks).
+
 ## [1.1.0] - 2026-09-12
 
 - **A Hall of Fame or template slot can now be filled from a pasted Pokémon

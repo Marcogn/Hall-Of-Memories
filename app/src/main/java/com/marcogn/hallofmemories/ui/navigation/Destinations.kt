@@ -14,6 +14,10 @@ sealed interface Destination {
     @Serializable
     data object Settings : Destination
 
+    /** Info: version, "Check for updates", credits and disclaimers (Phase 7). Reachable from the drawer only. */
+    @Serializable
+    data object About : Destination
+
     @Serializable
     data class HackDetail(val hackId: String) : Destination
 

@@ -34,7 +34,8 @@ one, or a break of a rule below. Everything else is a Nit.
 - `MainActivity` stays an `AppCompatActivity`; screens with custom back logic
   have a `BackHandler`.
 - `HttpURLConnection`: no hand-set `Accept-Encoding`; TheGamesDB keeps the
-  desktop browser User-Agent. Never sync per-Pokémon PokéAPI records.
+  desktop browser User-Agent; the GitHub release client sends an app-name one
+  (GitHub asks for it), see `data/update/UpdateIo.kt`. Never sync per-Pokémon PokéAPI records.
 - Robolectric test classes carry `@Config(sdk = [26])`; test names are ASCII.
 - No new dependency without an explicit request; nothing out of scope
   (`CLAUDE.md`, "What NOT to do").

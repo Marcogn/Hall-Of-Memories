@@ -54,9 +54,10 @@ PokéAPI at runtime and are never bundled as assets.
 - **Phase 4 — Reusable Pokémon templates**: ✅ done
 - **Phase 5 — Presentation polish + local backup**: ✅ done
 - **Phase 6 — Signing, release pipeline, docs**: ✅ done
-- **Phase 7 — In-app updates and Info screen**: 📋 planned (Sonnet), see
+- **Phase 7 — In-app updates and Info screen**: 🚧 code done, device checks pending
+  (Sonnet), see
   [`docs/plan/phase-7-updates-and-about.md`](docs/plan/phase-7-updates-and-about.md);
-  starts after ThePatientGamerHelper Phase 9 (the pilot) is merged
+  ported from ThePatientGamerHelper Phase 9 at 95f0b97 (release 1.1.2)
 - **v2** — Google Drive backup, deliberately out of v1. Currently described
   only as a section inside `docs/spec.md` ("v2 (out of scope, spec to be
   written separately)"), not yet its own document.
@@ -105,6 +106,8 @@ com.marcogn.hallofmemories
 │   ├── image/        ImageStorage (internal storage, downsample + compress)
 │   ├── backup/       BackupArchive (zip), LocalBackupManager (SAF)
 │   ├── settings/     ThemePreferences (DataStore), ViewModePreferences (SharedPreferences)
+│   ├── update/       GitHubReleaseClient, ApkDownloader/Verifier/Installer, UpdateManager,
+│   │                 UpdatePreferences (SharedPreferences)
 │   └── debug/        DebugSeeder, behind BuildConfig.SEED_DEBUG_DATA
 ├── domain/
 │   ├── model/        pure models, enums, conversions — no Android imports
@@ -114,6 +117,7 @@ com.marcogn.hallofmemories
 │   ├── validation/   pure slot validation
 │   ├── showdown/     Pokémon Showdown set text: parse + export, verified against
 │   │                 the real client's own grammar (sim/teams.ts)
+│   ├── update/       pure: versions, release parsing, APK pick, check policy, update state
 │   ├── thegamesdb/   pure parsers over TheGamesDB's JSON responses (lookup
 │   │                 tables, search results), no Android or network import
 │   ├── backup/       BackupPayload DTOs + mapping
@@ -126,7 +130,9 @@ com.marcogn.hallofmemories
     ├── hack/         hack form + hack detail
     ├── hof/          Hall of Fame form, slot editor, entry detail
     ├── templates/    reusable Pokémon templates
-    ├── settings/     theme, language, sprites, pokédex data, API key, backup
+    ├── settings/     theme, language, updates, sprites, pokédex data, API key, backup
+    ├── update/       app-wide update dialogs (UpdateDialogHost), UpdateViewModel
+    ├── about/        Info screen
     └── common/       shared composables (PokemonSprite, EditableComboBox, StatGrid, ...)
 ```
 
@@ -185,7 +191,9 @@ Carried over from the sibling projects; each one cost real debugging time.
   raw gzip bytes.
 - **Third-party sites reject non-browser User-Agents misleadingly.**
   TheGamesDB answers an app-like UA with "invalid API key" for a valid key.
-  Keep the realistic desktop UA string.
+  Keep the realistic desktop UA string. This is about TheGamesDB only: the GitHub
+  release client sends an app-name UA on purpose (GitHub asks for it,
+  `data/update/UpdateIo.kt`).
 - **PokéAPI per-Pokémon records are ~530 KB each.** Never sync them; see
   `docs/plan/reference-pokeapi.md` for what to fetch instead.
 - **Never `clearAllTables()`** — cache invalidation must name the cache

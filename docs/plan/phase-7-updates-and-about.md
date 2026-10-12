@@ -28,8 +28,8 @@ Requested by the author on 2026-10-11 for all six of their apps; decisions in
 - Adaptations to this app:
   - owner/repo `Marcogn/Hall-Of-Memories` as `BuildConfig` fields;
   - the startup check runs on the existing `@ApplicationScope` scope (`di/CoroutinesModule.kt`);
-  - preferences next to `ThemePreferences` in the `settings_prefs` DataStore (this app's store for
-    settings), not SharedPreferences;
+  - preferences in SharedPreferences like the pilot (decided at implementation, see
+    `docs/implementation-decisions.md`, "Phase 7 as built");
   - the asset is picked by its `.apk` suffix: the kit renamed it to `Hall-Of-Memories-x.y.z.apk`
     (decisions, "Release asset renamed"), and nothing may depend on the name.
 - Manifest: `REQUEST_INSTALL_PACKAGES`. The existing FileProvider is not needed (session API) and
@@ -48,8 +48,8 @@ Requested by the author on 2026-10-11 for all six of their apps; decisions in
 
 - `ui/about/AboutScreen`, `Destination.About`, an entry in the drawer under Settings, with the
   `BackHandler` the drawer screens need (Known gotchas).
-- Content: app name, `BuildConfig.VERSION_NAME` (+ `VERSION_CODE`), "Check for updates" with its
-  result, "Fatto con ❤ da marcogn" / "Made with ❤ by marcogn", GitHub link, MIT licence.
+- Content: app name, `BuildConfig.VERSION_NAME` (no version code, as in the pilot's 1.1.2), "Check for updates" with its
+  result, "Fatto con il ❤️ da Marcogn" / "Made with ❤️ from Marcogn" (the pilot's wording after its 1.1.1), GitHub link, MIT licence.
 - Disclaimers (wording reviewed by the author in the PR): unofficial fan-made app, not affiliated with
   or endorsed by Nintendo, Game Freak, Creatures or The Pokémon Company; Pokémon and the species
   names are their trademarks; species, move and ability data from PokéAPI, sprites from its sprite

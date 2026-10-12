@@ -343,6 +343,39 @@ single device session, starting from an empty database:
 
 ---
 
+## Phase 7 — In-app updates and Info screen
+
+Needs two signed release builds: an older one installed (e.g. 1.1.0) and a
+newer published release (the first one that carries this phase). A debug
+build can never install a release APK (different signing key).
+
+1. Install the older signed release and start it: the update dialog shows the
+   newer version, its headlines and "Full changelog" (opens the GitHub
+   changelog).
+2. "Not now" closes it; with frequency "Every start", the next start asks
+   again.
+3. Download: the progress dialog shows a percentage; Cancel stops it and
+   returns to the first dialog. Download again to the end: "Ready to install".
+4. Install: the first time, the system sends you to the "install unknown
+   apps" screen for this app; enable it and come back, the system install
+   confirmation appears. Confirm: the app reopens on the new version. Decline
+   instead: "Ready to install" is offered again.
+5. Airplane mode at startup: no dialog, no crash. In Info, "Check for
+   updates" then shows a connection message under the button.
+6. Settings → Updates: "Never" never asks at startup, but Info's "Check for
+   updates" still works. "Daily"/"Weekly" do not ask a second time within
+   their period after a successful check.
+7. Info (drawer, under Settings): installed version without the version code,
+   the credit line, GitHub link, licence, the five legal notes. Check Italian
+   and English, light and dark theme, and that the system back gesture
+   returns to the hack library.
+8. A debug build never shows the dialog at startup, but "Check for updates"
+   in Info runs the check.
+
+Not testable on the JVM: the PackageInstaller session, the system
+confirmation and the unknown-apps round trip (see the pilot's AOSP notes in
+`docs/implementation-decisions.md`).
+
 ## Post-launch bug-fix round
 
 Seven issues reported from real on-device use after Phases 0–6 shipped. See

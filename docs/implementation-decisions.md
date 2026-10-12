@@ -562,7 +562,40 @@ Planned in `docs/plan/phase-7-updates-and-about.md` (the author's request for al
 - **The APK is the release's `.apk` asset, whatever its name**, verified by SHA-256 `digest`, package
   name, higher `versionCode` and signing certificate, installed through `PackageInstaller` with the
   system confirmation.
-- **No new dependency and no WorkManager** (plan rule 3): platform APIs only, settings in the existing
-  DataStore.
+- **No new dependency and no WorkManager** (plan rule 3): platform APIs only (the settings store is
+  decided below, in "Phase 7 as built").
 - **The dialog shows the Release body** (CHANGELOG headlines) plus a "Full changelog" link.
 
+### Phase 7 as built (2026-10-12)
+
+Copied from ThePatientGamerHelper at `95f0b97` (release 1.1.2), packages renamed, then adapted. Where
+the pilot and the plan differed, the author chose:
+
+- **Preferences stay in SharedPreferences, as in the pilot** (`update_prefs`), not in the
+  `settings_prefs` DataStore the plan proposed. The pilot reads frequency and `lastCheckAt` through
+  synchronous getters (`checkIfDue()`, the Settings ViewModel); DataStore would have turned both into
+  suspend reads for two values. The repo already has a SharedPreferences store (`ViewModePreferences`).
+- **The startup check runs on `@ApplicationScope`** (injected into `UpdateManager`), not on the private
+  scope the pilot's manager creates. Same lifetime (the process), so a rotation or language change still
+  cannot cancel the check; the once-per-process guard is the pilot's.
+- **Credit line is the pilot's after its 1.1.1 fix**: "Fatto con il ❤️ da Marcogn" / "Made with ❤️ from
+  Marcogn" (the plan said "da marcogn" / "by marcogn").
+- **No version code on the Info screen** (pilot 1.1.2): only `BuildConfig.VERSION_NAME`. The plan's
+  "(+ `VERSION_CODE`)" is superseded.
+
+Adapted without a divergence to decide:
+
+- **Info is a drawer screen**, with `HallOfMemoriesTopBar` and the menu button like Settings and
+  Templates, not the pilot's back-arrow screen. It has no `BackHandler`: `navigateFromDrawer` leaves
+  Home below it, so the default back already returns there and no custom logic exists to bypass.
+- **Updates section in Settings** reuses `SettingsSection` and the existing radio row, above Sprites.
+- **Disclaimers** are the plan's five: unofficial fan-made app (Nintendo, Game Freak, Creatures, The
+  Pokémon Company), trademarks, PokéAPI data and sprites, TheGamesDB box art and logos, ROM hacks. The
+  wording is a proposal for the author to review in the PR.
+- **`UpdateInstallReceiver` and its manifest entry** come with the copy (the plan's list did not name
+  them); the existing FileProvider stays untouched and unused by the updater.
+- **Test fixtures** (`src/test/resources/update/`) are the pilot's real GitHub responses, unchanged: the
+  parser tests do not depend on which repository they came from.
+- **Checked here**: the container's Maven Central access is intermittently rate-limited (HTTP 429), so
+  Gradle needs retries until its cache is warm. The installer path (session, confirmation, unknown-apps
+  round trip) is only checkable on a device: `docs/test-plan.md`, "Phase 7".
