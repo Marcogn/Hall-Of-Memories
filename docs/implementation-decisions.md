@@ -599,3 +599,10 @@ Adapted without a divergence to decide:
 - **Checked here**: the container's Maven Central access is intermittently rate-limited (HTTP 429), so
   Gradle needs retries until its cache is warm. The installer path (session, confirmation, unknown-apps
   round trip) is only checkable on a device: `docs/test-plan.md`, "Phase 7".
+
+## 2026-10-14 — Android kit updated 425e232 → 5fb47c3
+
+- Adds `self-review` + `review-gate.sh` (review enforced before a PR or session end), `deps-triage`,
+  `branch-name.sh`, Release `bump` choice with run cleanup (`actions: write`), Dependabot cooldown.
+- No local divergence from the kit's files; `CLAUDE.md` gained the review and naming rules and its release paragraph now describes `bump`. Nothing
+  left out.

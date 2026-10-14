@@ -246,13 +246,20 @@ push/PR. In a cloud session the SessionStart hook
 fighting it. Never report a build as passing that you did not run.
 
 Claude Code tooling: `.claude/` holds the kit's skills (`verify`, `new-plan`,
-`next-phase`, `close-phase`, `steward`), the `architecture-reviewer` agent and
-the Android SDK hook, from
+`next-phase`, `close-phase`, `self-review`, `steward`, `deps-triage`), the
+`architecture-reviewer` agent and the hooks (Android SDK, review gate, branch
+names), from
 [claude-skill-android-kit](https://github.com/Marcogn/claude-skill-android-kit)
 (`docs/claude.md`); `.github/workflows/` holds short callers of the kit's
 reusable workflows (`docs/ci.md`). `REVIEW.md` is what every review checks.
 Bugs and ideas found outside the current task become GitHub issues (bug/task
 templates, `docs/claude.md`, "Issues"), not notes in this file.
+
+**Review before any PR.** A session that committed code is reviewed
+(`self-review`, enforced by `.claude/hooks/review-gate.sh`) before it can end
+or open a pull request; docs-only diffs are exempt. **Names:** name the session
+at the start with `set_session_title` (`HoM <what>`); branches Claude creates
+are `<type>/<what-and-where>` (`docs/claude.md`, "Names").
 
 Testing approach: pure JVM unit tests for `domain/` (parsers, sprite
 resolution, filters, validation, mappers, backup DTOs); Robolectric as JVM
@@ -274,9 +281,10 @@ lead-ins into the GitHub Release body, followed by a link back to the
 changelog section. Keep the bold span short and skimmable.
 
 Cutting a release (Phase 6 onward) is a manual `Release` workflow dispatch
-with the new `x.y.z` typed in; the workflow validates it, cuts the changelog,
-bumps the version, builds, signs, publishes, and only then pushes the bump to
-`main`.
+with a `bump` choice (minor by default) or an exact `x.y.z` typed in; the
+workflow first deletes old Actions runs, validates the version, cuts the
+changelog, bumps the version, builds, signs, publishes, and only then pushes
+the bump to `main` (`docs/ci.md`, "Release versions").
 
 ## What NOT to do until explicitly requested
 
