@@ -604,5 +604,5 @@ Adapted without a divergence to decide:
 
 - Adds `self-review` + `review-gate.sh` (review enforced before a PR or session end), `deps-triage`,
   `branch-name.sh`, Release `bump` choice with run cleanup (`actions: write`), Dependabot cooldown.
-- No local divergence from the kit's files; `CLAUDE.md` gained the review and naming rules. Nothing
+- No local divergence from the kit's files; `CLAUDE.md` gained the review and naming rules and its release paragraph now describes `bump`. Nothing
   left out.

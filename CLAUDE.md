@@ -281,9 +281,10 @@ lead-ins into the GitHub Release body, followed by a link back to the
 changelog section. Keep the bold span short and skimmable.
 
 Cutting a release (Phase 6 onward) is a manual `Release` workflow dispatch
-with the new `x.y.z` typed in; the workflow validates it, cuts the changelog,
-bumps the version, builds, signs, publishes, and only then pushes the bump to
-`main`.
+with a `bump` choice (minor by default) or an exact `x.y.z` typed in; the
+workflow first deletes old Actions runs, validates the version, cuts the
+changelog, bumps the version, builds, signs, publishes, and only then pushes
+the bump to `main` (`docs/ci.md`, "Release versions").
 
 ## What NOT to do until explicitly requested
 
