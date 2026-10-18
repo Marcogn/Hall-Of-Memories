@@ -599,3 +599,13 @@ Adapted without a divergence to decide:
 - **Checked here**: the container's Maven Central access is intermittently rate-limited (HTTP 429), so
   Gradle needs retries until its cache is warm. The installer path (session, confirmation, unknown-apps
   round trip) is only checkable on a device: `docs/test-plan.md`, "Phase 7".
+
+## Android kit updated (2026-10-18, kit 0c21768, then 1721624)
+
+Update from 425e232 with `/android-kit`; the project had no local changes to
+kit files, so the template was copied unchanged. New: `self-review` skill and
+`review-gate.sh` (Stop hook and PR gate), `branch-name.sh`, `issues-triage` and
+`deps-triage` skills, Dependabot cooldown, and a `Release` caller with a
+`bump` choice (minor by default; `version` is now optional and overrides it)
+that also deletes old workflow runs, hence `actions: write`. `CLAUDE.md` got
+the naming rule and the review line.
