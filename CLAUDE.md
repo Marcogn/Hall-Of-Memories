@@ -246,13 +246,20 @@ push/PR. In a cloud session the SessionStart hook
 fighting it. Never report a build as passing that you did not run.
 
 Claude Code tooling: `.claude/` holds the kit's skills (`verify`, `new-plan`,
-`next-phase`, `close-phase`, `steward`), the `architecture-reviewer` agent and
+`next-phase`, `close-phase`, `self-review`, `steward`, `issues-triage`,
+`deps-triage`), the `architecture-reviewer` agent and
 the Android SDK hook, from
 [claude-skill-android-kit](https://github.com/Marcogn/claude-skill-android-kit)
 (`docs/claude.md`); `.github/workflows/` holds short callers of the kit's
 reusable workflows (`docs/ci.md`). `REVIEW.md` is what every review checks.
 Bugs and ideas found outside the current task become GitHub issues (bug/task
 templates, `docs/claude.md`, "Issues"), not notes in this file.
+
+Names: at the start of a cloud session, name it with `set_session_title`
+(`HallOfMemories <what>`); branches Claude creates are `<type>/<what-and-where>`
+(`docs/claude.md`, "Names"). The review (`self-review`) runs before any PR and
+at the end of a session with unreviewed code, enforced by
+`.claude/hooks/review-gate.sh`.
 
 Testing approach: pure JVM unit tests for `domain/` (parsers, sprite
 resolution, filters, validation, mappers, backup DTOs); Robolectric as JVM
